@@ -1,0 +1,9 @@
+# Specifications for the ECMWF GRIB interface
+requires = "batteries"
+requires += "pcre"
+description = "ECMWF GRIB library interface"
+version = "1.9.5"
+browse_interfaces = " GRIB "
+archive(byte) = "grib.cma"
+archive(native) = "grib.cmxa"
+
