@@ -742,7 +742,7 @@ value ml_grib_handles_new_from_multi_message( value data ) {
 // Translate an OCaml variant value to a GRIB API key iterator flag
 int translate_key_iterator_flag( int caml_flag ) {
     int flag;
-    switch( flag ) {
+    switch( caml_flag ) {
         case 0 : flag = GRIB_KEYS_ITERATOR_ALL_KEYS; break;
         case 1 : flag = GRIB_KEYS_ITERATOR_SKIP_READ_ONLY; break;
         case 2 : flag = GRIB_KEYS_ITERATOR_SKIP_OPTIONAL; break;
