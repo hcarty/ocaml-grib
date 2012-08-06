@@ -1,0 +1,56 @@
+OASISFormat: 0.3
+Name:        ocaml-grib
+Version:     1.9.16
+Synopsis:    Bindings for the ECMWF GRIB API
+Authors:     Hezekiah M. Carty
+License:     MIT
+Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
+XStdFilesAUTHORS: false
+XStdFilesREADME: false
+
+Flag jpeg
+  Description: Link with a JPEG2000 library
+  Default:true
+
+Flag jasper
+  Description: Use jasper for JPEG2000 support
+  Default$: flag(jpeg) && false
+
+Flag libjpeg
+  Description: Use libjpeg for JPEG2000 support
+  Default$: flag(jpeg) && false
+
+Flag openjpeg
+  Description: Use openjpeg for JPEG2000 support
+  Default$: flag(jpeg) && false
+
+Flag png
+  Description: Link with libpng
+  Default: true
+
+Library grib
+  Path:           src
+  BuildTools:     ocamlbuild
+  BuildDepends:   batteries, pcre
+  Pack:           true
+  Modules:        Handle,
+                  Index,
+                  Inventory,
+                  Iterator,
+                  Message,
+                  Multi,
+                  Nearest
+  CSources:       grib_stubs.c
+  CCLib:          -lgrib_api
+  CCOpt:          -O2
+  CompiledObject: best
+  if flag(jasper)
+    CCLib+: -ljasper
+  if flag(libjpeg)
+    CCLib+: -ljpeg
+  if flag(openjpeg)
+    CCLib+: -lopenjpeg
+  if flag(png)
+    CCLib+: -lpng
+  CCLib+:         -lm
+
