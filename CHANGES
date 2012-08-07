@@ -1,0 +1,7 @@
+0.9.1
+* Fix G2clib.get_data for fields with missing data
+* Add G2clib.of_handle for interoperability with the GRIB API modules
+
+0.9.0
+* Addition of g2clib 1.4.0
+* New versioning scheme, not tied to ECMWF GRIB API versions

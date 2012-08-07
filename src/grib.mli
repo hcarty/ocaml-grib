@@ -376,12 +376,21 @@ module G2clib :
     (** The type of a GRIB field *)
     type 'a field_t
 
-    (** [of_message message field] returns a {!field_t} from [message] with
+    (** [of_message ?field message] returns a {!field_t} from [message] with
         unpacked field values and bitmap.
 
-        @param field indicates which field in the message you want to extract
+        @param field indicates which field in the message you want to extract.
+        Defaults to [1] (the first field in the message).
     *)
-    val of_message : Message.t -> int -> [ `unpacked ] field_t
+    val of_message : ?field:int -> Message.t -> [ `unpacked ] field_t
+
+    (** [of_handle ?field handle] returns a {!field_t} from [handle] with
+        unpacked field values and bitmap.
+
+        @param field indicates which field in the handle you want to extract.
+        Defaults to [1] (the first field in the message).
+    *)
+    val of_handle : ?field:int -> Handle.t -> [ `unpacked ] field_t
 
     (** [get_data field] returns the unpacked data from [field]. *)
     val get_data : [ `unpacked ] field_t -> float array
