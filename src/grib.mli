@@ -383,13 +383,6 @@ module G2clib :
     *)
     val of_message : Message.t -> int -> [ `unpacked ] field_t
 
-    (** [metadata message] only decodes metadata from the given [message],
-        without extracting the field values.
-
-        @param field indicates which field in the message you want to extract
-    *)
-    val metadata : Message.t -> int -> [ `metadata ] field_t
-
     (** [get_data field] returns the unpacked data from [field]. *)
     val get_data : [ `unpacked ] field_t -> float array
   end
