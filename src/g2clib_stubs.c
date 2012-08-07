@@ -118,7 +118,7 @@ value ml_get_data( value ml_field ) {
     field = Gribfield_val( ml_field );
 
     // Allocate an OCaml array and copy the data over
-    ml_data = caml_alloc( field->ndpts * Double_wosize, Double_array_tag );
+    ml_data = caml_alloc( field->ngrdpts * Double_wosize, Double_array_tag );
     for ( i = 0; i < field->ngrdpts; i++ ) {
         Store_double_field( ml_data, i, field->fld[i] );
     }
