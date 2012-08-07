@@ -374,17 +374,23 @@ module G2clib :
     (** NCEP g2clib bindings *)
 
     (** The type of a GRIB field *)
-    type field_t
+    type 'a field_t
 
-    (** [of_message message field ~unpack ~expand] returns a {!field_t} from
-        [message].
+    (** [of_message message field] returns a {!field_t} from [message] with
+        unpacked field values and bitmap.
 
         @param field indicates which field in the message you want to extract
-        @param unpack indicates whether the data should be unpacked
-        @param expand indicates whether the data should be expanded *)
-    val of_message : Message.t -> int -> unpack:bool -> expand:bool -> field_t
+    *)
+    val of_message : Message.t -> int -> [ `unpacked ] field_t
+
+    (** [metadata message] only decodes metadata from the given [message],
+        without extracting the field values.
+
+        @param field indicates which field in the message you want to extract
+    *)
+    val metadata : Message.t -> int -> [ `metadata ] field_t
 
     (** [get_data field] returns the unpacked data from [field]. *)
-    val get_data : field_t -> float array
+    val get_data : [ `unpacked ] field_t -> float array
   end
 
