@@ -1,6 +1,6 @@
 OASISFormat: 0.3
 Name:        ocaml-grib
-Version:     1.9.16
+Version:     0.9.0
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
 License:     MIT
@@ -14,7 +14,7 @@ Flag jpeg
 
 Flag jasper
   Description: Use jasper for JPEG2000 support
-  Default$: flag(jpeg) && false
+  Default$: flag(jpeg) && true
 
 Flag libjpeg
   Description: Use libjpeg for JPEG2000 support
@@ -39,11 +39,65 @@ Library grib
                   Iterator,
                   Message,
                   Multi,
-                  Nearest
-  CSources:       grib_stubs.c
+                  Nearest,
+                  G2clib
+  CSources:       grib_stubs.c,
+                  g2clib_stubs.c,
+                  g2clib-src/cmplxpack.c,
+                  g2clib-src/compack.c,
+                  g2clib-src/comunpack.c,
+                  g2clib-src/dec_jpeg2000.c,
+                  g2clib-src/dec_png.c,
+                  g2clib-src/drstemplates.c,
+                  g2clib-src/enc_jpeg2000.c,
+                  g2clib-src/enc_png.c,
+                  g2clib-src/g2_addfield.c,
+                  g2clib-src/g2_addgrid.c,
+                  g2clib-src/g2_addlocal.c,
+                  g2clib-src/g2_create.c,
+                  g2clib-src/g2_free.c,
+                  g2clib-src/g2_getfld.c,
+                  g2clib-src/g2_gribend.c,
+                  g2clib-src/g2_info.c,
+                  g2clib-src/g2_miss.c,
+                  g2clib-src/g2_unpack1.c,
+                  g2clib-src/g2_unpack2.c,
+                  g2clib-src/g2_unpack3.c,
+                  g2clib-src/g2_unpack4.c,
+                  g2clib-src/g2_unpack5.c,
+                  g2clib-src/g2_unpack6.c,
+                  g2clib-src/g2_unpack7.c,
+                  g2clib-src/gbits.c,
+                  g2clib-src/getdim.c,
+                  g2clib-src/getpoly.c,
+                  g2clib-src/gridtemplates.c,
+                  g2clib-src/int_power.c,
+                  g2clib-src/jpcpack.c,
+                  g2clib-src/jpcunpack.c,
+                  g2clib-src/misspack.c,
+                  g2clib-src/mkieee.c,
+                  g2clib-src/pack_gp.c,
+                  g2clib-src/pdstemplates.c,
+                  g2clib-src/pngpack.c,
+                  g2clib-src/pngunpack.c,
+                  g2clib-src/rdieee.c,
+                  g2clib-src/reduce.c,
+                  g2clib-src/seekgb.c,
+                  g2clib-src/simpack.c,
+                  g2clib-src/simunpack.c,
+                  g2clib-src/specpack.c,
+                  g2clib-src/specunpack.c,
+                  g2clib-src/drstemplates.h,
+                  g2clib-src/gridtemplates.h,
+                  g2clib-src/grib2.h,
+                  g2clib-src/pdstemplates.h
   CCLib:          -lgrib_api
   CCOpt:          -O2
   CompiledObject: best
+  if flag(jpeg)
+    CCOpt+: -DUSE_JPEG2000
+  if flag(png)
+    CCOpt+: -DUSE_PNG
   if flag(jasper)
     CCLib+: -ljasper
   if flag(libjpeg)

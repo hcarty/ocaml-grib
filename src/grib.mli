@@ -369,4 +369,21 @@ module Nearest :
       ?mask:bool ->
       Handle.t -> (float * float) array -> near_t array
 end
+module G2clib :
+  sig
+    (** NCEP g2clib bindings *)
+
+    (** The type of a GRIB field *)
+    type 'a field_t
+
+    (** [of_message message field] returns a {!field_t} from [message] with
+        unpacked field values and bitmap.
+
+        @param field indicates which field in the message you want to extract
+    *)
+    val of_message : Message.t -> int -> [ `unpacked ] field_t
+
+    (** [get_data field] returns the unpacked data from [field]. *)
+    val get_data : [ `unpacked ] field_t -> float array
+  end
 
