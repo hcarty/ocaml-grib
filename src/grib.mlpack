@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 0be782389703a1e8eacf4a12bef36577)
+# DO NOT EDIT (digest: 6ba8a540fae0fec8725e70e13c99b0f7)
 Handle
 Index
 Inventory
@@ -7,4 +7,5 @@ Iterator
 Message
 Multi
 Nearest
+G2clib
 # OASIS_STOP
