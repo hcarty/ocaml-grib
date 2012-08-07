@@ -1,7 +1,7 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 5d18a0e6f3280c5708e73a946a3197e6) *)
+(* DO NOT EDIT (digest: b14728337a77d01006890089a0723f40) *)
 module OASISGettext = struct
-# 21 "/home/mlavigne/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/oasis/OASISGettext.ml"
+# 21 "/home/hcarty/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/oasis/OASISGettext.ml"
 
   let ns_ str =
     str
@@ -24,7 +24,7 @@ module OASISGettext = struct
 end
 
 module OASISExpr = struct
-# 21 "/home/mlavigne/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/oasis/OASISExpr.ml"
+# 21 "/home/hcarty/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/oasis/OASISExpr.ml"
 
 
 
@@ -116,7 +116,7 @@ end
 
 # 117 "myocamlbuild.ml"
 module BaseEnvLight = struct
-# 21 "/home/mlavigne/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/base/BaseEnvLight.ml"
+# 21 "/home/hcarty/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/base/BaseEnvLight.ml"
 
   module MapString = Map.Make(String)
 
@@ -214,7 +214,7 @@ end
 
 # 215 "myocamlbuild.ml"
 module MyOCamlbuildFindlib = struct
-# 21 "/home/mlavigne/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml"
+# 21 "/home/hcarty/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml"
 
   (** OCamlbuild extension, copied from 
     * http://brion.inria.fr/gallium/index.php/Using_ocamlfind_with_ocamlbuild
@@ -323,7 +323,7 @@ module MyOCamlbuildFindlib = struct
 end
 
 module MyOCamlbuildBase = struct
-# 21 "/home/mlavigne/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
+# 21 "/home/hcarty/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
 
   (** Base functions for writing myocamlbuild.ml
       @author Sylvain Le Gall
@@ -339,7 +339,7 @@ module MyOCamlbuildBase = struct
   type name = string 
   type tag = string 
 
-# 56 "/home/mlavigne/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
+# 56 "/home/hcarty/ocamlbrew/ocaml-4.00.0/build/odb/install-oasis/oasis-0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
 
   type t =
       {
@@ -483,6 +483,7 @@ let package_default =
           ("grib",
             "src",
             [
+               "src/stubs.h";
                "src/g2clib-src/drstemplates.h";
                "src/g2clib-src/gridtemplates.h";
                "src/g2clib-src/grib2.h";
@@ -822,6 +823,6 @@ let package_default =
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
-# 826 "myocamlbuild.ml"
+# 827 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;
