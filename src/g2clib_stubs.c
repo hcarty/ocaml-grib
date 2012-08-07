@@ -72,7 +72,7 @@ value ml_g2_getfld( value message, value field_num, value unpack, value expand )
     int result;
     gribfield *field;
 
-    result = g2_getfld( String_val( message ), Int_val( field_num ), Int_val( unpack ), Int_val( expand ), &field );
+    result = g2_getfld( String_val( message ), Int_val( field_num ), Bool_val( unpack ), Bool_val( expand ), &field );
 
     // Raise an exception if we fail to extract a field
     if ( result != 0 ) {
