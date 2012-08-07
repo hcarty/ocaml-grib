@@ -1,0 +1,6 @@
+Next release
+* Fix G2clib.get_data for fields with missing data
+
+0.9.0
+* Addition of g2clib 1.4.0
+* New versioning scheme, not tied to ECMWF GRIB API versions
