@@ -17,18 +17,11 @@
 /* GRIB API include */
 #include <grib_api.h>
 
+#include "stubs.h"
+
 /* For debugging - we want to have access to printf, stderr and such */
 #include <stdio.h>
 #include <string.h>
-
-// Re-define the GRIB_CHECK macro to be more OCaml-friendly
-#undef GRIB_CHECK
-#define GRIB_CHECK(f, e) \
-    if ((f) != (e)) { \
-        const char *message; \
-        message = grib_get_error_message( f ); \
-        caml_invalid_argument( message ); \
-    }
 
 // Allow for ridiculously long exception strings.
 #define MAX_EXCEPTION_MESSAGE_LENGTH 10000
@@ -87,27 +80,6 @@ value ml_grib_get_double_array_easy( value data ) {
     // Return the actual data values!
     CAMLreturn( numbers );
 }
-
-#define Handle_val(val) ((grib_handle *) val)
-#define Index_val(val) ((grib_index *) val)
-#define Iterator_val(val) ((grib_iterator *) val)
-#define File_val(val) ((FILE *) val)
-#define Keys_val(val) ((grib_keys_iterator *) val)
-#define Nearest_val(val) (* ((grib_nearest **) Data_custom_val(val)))
-
-// Val_none, Val_some and Some_val are from:
-// http://www.linux-nantes.org/~fmonnier/OCaml/ocaml-wrapping-c.php#ref_option
-#define Val_none Val_int(0)
-
-static inline value Val_some( value v ) {
-    CAMLparam1( v );
-    CAMLlocal1( some );
-    some = caml_alloc(1, 0);
-    Store_field( some, 0, v );
-    CAMLreturn( some );
-}
-
-#define Some_val(v) Field(v,0)
 
 //
 //
@@ -977,69 +949,3 @@ value ml_grib_nearest_find_multiple( value handle, value is_lsm, value inlats, v
     CAMLreturn( tuple );
 }
 
-// THE FOLLOWING FUNCTIONS HAVE A SERIOUS GC-RELATED BUG!
-// When a grib handle is created, it keeps a pointer to the source data (in
-// this case, the string passed in from OCaml with the grib message's bytes).
-// This becomes a problem when the GC moves the message string between the
-// handle creation and value extraction.  The handle's data pointer may end up
-// pointing off in to the ether, leading to a segfault when the any grib API
-// functions try to access it.
-
-#if 0
-#define Handle_val(val) ((grib_handle *) val)
-
-// Create a GRIB handle from a single blob of memory
-value ml_grib_handle_new_from_message( value data, value length ) {
-    CAMLparam1( data );
-
-    // Treat the given string like a raw blob of bytes
-    void *data_ptr;
-    data_ptr = (void *) String_val( data );
-
-    CAMLreturn( (value) grib_handle_new_from_message( NULL, data_ptr, Int_val( length ) ) );
-}
-
-// Free a grib handle
-value ml_grib_handle_delete( value handle ) {
-    CAMLparam1( handle );
-
-    CAMLreturn( Val_int( grib_handle_delete( Handle_val( handle ) ) ) );
-}
-
-//
-// Retrieve data from a grib handle
-//
-
-// Find out how many values are associated with a key
-value ml_grib_get_size( value handle, value key ) {
-    CAMLparam2( handle, key );
-
-    size_t size;
-
-    GRIB_CHECK( grib_get_size( Handle_val( handle ), String_val( key ), &size ), 0 );
-
-    // TODO: Add OCaml error checking!
-
-    CAMLreturn( Val_int( size ) );
-}
-
-// Retrieve data in double-precisions floating point format
-value ml_grib_get_double_array( value handle, value key ) {
-    CAMLparam2( handle, key );
-    CAMLlocal1( data );
-
-    size_t in_size, out_size;
-
-    in_size = Int_val( ml_grib_get_size( handle, key ) );
-    out_size = in_size;
-
-    // Allocate an array to hold the output data
-    data = caml_alloc( in_size * Double_wosize, Double_array_tag );
-
-    GRIB_CHECK( grib_get_double_array( Handle_val( handle ), String_val( key ), (double *) data, &out_size ), 0 );
-
-    // TODO: Add OCaml error checking!
-
-    CAMLreturn( data );
-}
-#endif

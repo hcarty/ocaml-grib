@@ -14,8 +14,13 @@
 #include <caml/bigarray.h>
 #include <caml/custom.h>
 
-/* Shapelib API include */
+/* GRIB API include */
+#include <grib_api.h>
+
+/* g2clib API include */
 #include "g2clib-src/grib2.h"
+
+#include "stubs.h"
 
 /* For debugging - we want to have access to printf, stderr and such */
 #include <stdio.h>
@@ -29,8 +34,6 @@
 // GRIB field handling
 //
 //
-
-#define Gribfield_val(val) (* ((gribfield **) Data_custom_val(val)))
 
 // OCaml handler to free a GRIB field when it is GC'd
 void finalize_gribfield( value ml_field ) {
@@ -65,7 +68,7 @@ value Val_gribfield( gribfield *field ) {
 //
 //
 
-// Get GRIB field
+// Get GRIB field from a message
 value ml_g2_getfld( value message, value field_num, value unpack, value expand ) {
     CAMLparam4( message, field_num, unpack, expand );
 
@@ -77,6 +80,29 @@ value ml_g2_getfld( value message, value field_num, value unpack, value expand )
     // Raise an exception if we fail to extract a field
     if ( result != 0 ) {
         caml_invalid_argument( "Bad message" );
+    }
+
+    CAMLreturn( Val_gribfield( field ) );
+}
+
+// Get GRIB field from a GRIB API handle
+value ml_g2_getfld_handle( value handle, value field_num, value unpack, value expand ) {
+    CAMLparam4( handle, field_num, unpack, expand );
+
+    int result;
+    gribfield *field;
+    const void *message;
+    size_t size;
+
+    // Get a pointer to the message embedded in the handle.  No copying is
+    // required because the message isn't being passed back to OCaml.
+    GRIB_CHECK( grib_get_message( Handle_val( handle ), &message, &size ), 0 );
+
+    result = g2_getfld( (unsigned char *)message, Int_val( field_num ), Bool_val( unpack ), Bool_val( expand ), &field );
+
+    // Raise an exception if we fail to extract a field
+    if ( result != 0 ) {
+        caml_invalid_argument( "Bad message from handle" );
     }
 
     CAMLreturn( Val_gribfield( field ) );

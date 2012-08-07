@@ -43,6 +43,7 @@ Library grib
                   G2clib
   CSources:       grib_stubs.c,
                   g2clib_stubs.c,
+                  stubs.h,
                   g2clib-src/cmplxpack.c,
                   g2clib-src/compack.c,
                   g2clib-src/comunpack.c,
