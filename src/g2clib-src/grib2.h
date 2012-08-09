@@ -211,6 +211,7 @@ void seekgb(FILE *,g2int ,g2int ,g2int *,g2int *);
 g2int g2_info(unsigned char *,g2int *,g2int *,g2int *,g2int *);
 g2int g2_getfld(unsigned char *,g2int ,g2int ,g2int ,gribfield **);
 void g2_free(gribfield *);
+void g2_miss(gribfield *,float *,int *);
 
 /*  Prototypes for packing API  */
 g2int g2_create(unsigned char *,g2int *,g2int *);

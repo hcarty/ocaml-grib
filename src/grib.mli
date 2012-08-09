@@ -394,5 +394,14 @@ module G2clib :
 
     (** [get_data field] returns the unpacked data from [field]. *)
     val get_data : [ `unpacked ] field_t -> float array
+
+    (** [get_missing field] returns the value(s) associated with missing data
+        in [field] if there are any.  If both values in the tuple are [None]
+        then there is no special value for marking missing data.  If only
+        the first value is [Some x] then [x] is the only value used to indicate
+        missing data.  If the returned tuple is [Some a, Some b] then [a] is
+        the primary missing value and [b] is the secondary missing value
+        according to code table 5.5. *)
+    val get_missing : 'a field_t -> float option * float option
   end
 

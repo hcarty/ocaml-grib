@@ -127,3 +127,25 @@ value ml_get_data( value ml_field ) {
     CAMLreturn( ml_data );
 }
 
+// Get missing values, if there are any
+value ml_g2_miss( value ml_field ) {
+    CAMLparam1( ml_field );
+    CAMLlocal1( ml_missing );
+
+    float missing[2];
+    int num_missing;
+
+    g2_miss( Gribfield_val( ml_field ), missing, &num_missing );
+
+    // Allocate an OCaml tuple to send the values back
+    ml_missing = caml_alloc( 2, 0 );
+    Store_field(
+        ml_missing, 0,
+            num_missing >= 1 ? Val_some( caml_copy_double( missing[0] ) ) : Val_none );
+    Store_field(
+        ml_missing, 1,
+            num_missing >= 2 ? Val_some( caml_copy_double( missing[1] ) ) : Val_none );
+
+    // Return the tuple
+    CAMLreturn( ml_missing );
+}
