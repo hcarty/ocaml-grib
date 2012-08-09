@@ -9,7 +9,12 @@ external _of_handle : Handle.t -> int -> unpack:bool -> expand:bool -> 'a field_
 
 (* Usable wrappers *)
 
-external get_data : [ `unpacked ] field_t -> float array = "ml_get_data"
+external get_missing : 'a field_t -> float option * float option = "ml_g2_miss"
+
+external get_values :
+  ?missing1:float ->
+  ?missing2:float ->
+  [ `unpacked ] field_t -> float array = "ml_get_data"
 
 let of_message ?(field = 1) message =
   _of_message message field ~unpack:true ~expand:true

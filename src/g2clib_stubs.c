@@ -108,22 +108,72 @@ value ml_g2_getfld_handle( value handle, value field_num, value unpack, value ex
     CAMLreturn( Val_gribfield( field ) );
 }
 
+#define ML_G2_UNDEF 1.111e20
+
 // Get grid values from a GRIB field
-value ml_get_data( value ml_field ) {
-    CAMLparam1( ml_field );
+value ml_get_data( value ml_substitute1, value ml_substitute2, value ml_field ) {
+    CAMLparam3( ml_substitute1, ml_substitute2, ml_field );
     CAMLlocal1( ml_data );
 
     int i;
+    double v;
+    float missing[2];
+    int num_missing;
+
+    double substitute1 = ML_G2_UNDEF;
+    double substitute2 = ML_G2_UNDEF;
+
     gribfield *field;
+
     field = Gribfield_val( ml_field );
+    g2_miss( field, missing, &num_missing );
+
+    // Check to see if we are going to fill in any missing values
+    if ( num_missing >= 1 && ml_substitute1 != Val_none ) {
+        substitute1 = Double_val( Some_val( ml_substitute1 ) );
+    }
+
+    // Check to see if there are two possible missing values
+    if ( num_missing >= 2 && ml_substitute2 != Val_none ) {
+        substitute2 = Double_val( Some_val( ml_substitute2 ) );
+    }
 
     // Allocate an OCaml array and copy the data over
     ml_data = caml_alloc( field->ngrdpts * Double_wosize, Double_array_tag );
     for ( i = 0; i < field->ngrdpts; i++ ) {
-        Store_double_field( ml_data, i, field->fld[i] );
+        v = field->fld[i];
+        if ( num_missing >= 1 && v == missing[0] ) {
+            v = substitute1;
+        }
+        else if ( num_missing >= 2 && v == missing[1] ) {
+            v = substitute2;
+        }
+        Store_double_field( ml_data, i, v );
     }
 
     // Return the OCaml-formatted data copy
     CAMLreturn( ml_data );
 }
 
+// Get missing values, if there are any
+value ml_g2_miss( value ml_field ) {
+    CAMLparam1( ml_field );
+    CAMLlocal1( ml_missing );
+
+    float missing[2];
+    int num_missing;
+
+    g2_miss( Gribfield_val( ml_field ), missing, &num_missing );
+
+    // Allocate an OCaml tuple to send the values back
+    ml_missing = caml_alloc( 2, 0 );
+    Store_field(
+        ml_missing, 0,
+            num_missing >= 1 ? Val_some( caml_copy_double( missing[0] ) ) : Val_none );
+    Store_field(
+        ml_missing, 1,
+            num_missing >= 2 ? Val_some( caml_copy_double( missing[1] ) ) : Val_none );
+
+    // Return the tuple
+    CAMLreturn( ml_missing );
+}
