@@ -392,8 +392,18 @@ module G2clib :
     *)
     val of_handle : ?field:int -> Handle.t -> [ `unpacked ] field_t
 
-    (** [get_data field] returns the unpacked data from [field]. *)
-    val get_data : [ `unpacked ] field_t -> float array
+    (** [get_values ?missing1 ?missing2 field] returns the unpacked data from
+        [field], replacing missing values in complex packed grids if
+        replacements are provided.
+
+        @param missing1 will be substituted for any primary missing values if
+        it is provided
+        @param missing2 will be substituted for any seconary missing values if
+        it is provided *)
+    val get_values :
+      ?missing1:float ->
+      ?missing2:float ->
+      [ `unpacked ] field_t -> float array
 
     (** [get_missing field] returns the value(s) associated with missing data
         in [field] if there are any.  If both values in the tuple are [None]
