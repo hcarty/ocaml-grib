@@ -54,8 +54,7 @@ let iter f t =
   while !continue do
     match next_handle t with
     | Some handle ->
-        f handle;
-        Handle.delete handle;
+        with_dispose ~dispose:Handle.delete f handle
     | None ->
         (* Break out of the loop when we are out of handles *)
         continue := false;
@@ -67,8 +66,7 @@ let map f t =
   let rec inner l =
     match next_handle t with
     | Some handle ->
-        let result = f handle in
-        Handle.delete handle;
+        let result = with_dispose ~dispose:Handle.delete f handle in
         inner (result :: l)
     | None -> List.rev l
   in
@@ -77,11 +75,11 @@ let map f t =
 (** Apply [f] on the index from [filename], optionally initializing the index
     with the (key, value) pairs from [init]. *)
 let with_file_in ?init filename keys f =
-  let index = of_file filename keys in
-  Option.may (apply_kvs index) init;
-  let result = f index in
-  delete index;
-  result
+  with_dispose ~dispose:delete (
+    fun index ->
+      Option.may (apply_kvs index) init;
+      f index
+  ) (of_file filename keys)
 
 (** Like [iter], but starting with a file *)
 let iter_file f filename init =
