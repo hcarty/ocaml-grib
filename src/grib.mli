@@ -249,7 +249,9 @@ module Index :
 
     (** [*_key k v] build key-value pairs for defining an index. *)
     val double_key : string -> float -> kv
+    val float_key : string -> float -> kv
     val long_key : string -> int -> kv
+    val int_key : string -> int -> kv
     val string_key : string -> string -> kv
 
     (** [select index kv] selects the subset of values in [index] which

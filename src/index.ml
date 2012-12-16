@@ -27,6 +27,9 @@ let double_key k v = Double (k, v)
 let long_key k v = Long (k, v)
 let string_key k v = String (k, v)
 
+let float_key = double_key
+let int_key = long_key
+
 let select index kv =
   match kv with
   | Double (k, d) -> select_double index k d
