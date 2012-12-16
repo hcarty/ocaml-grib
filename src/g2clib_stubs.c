@@ -142,10 +142,10 @@ value ml_get_data( value ml_substitute1, value ml_substitute2, value ml_field ) 
     ml_data = caml_alloc( field->ngrdpts * Double_wosize, Double_array_tag );
     for ( i = 0; i < field->ngrdpts; i++ ) {
         v = field->fld[i];
-        if ( num_missing >= 1 && v == missing[0] ) {
+        if ( num_missing >= 1 && substitute1 != ML_G2_UNDEF && v == missing[0] ) {
             v = substitute1;
         }
-        else if ( num_missing >= 2 && v == missing[1] ) {
+        else if ( num_missing >= 2 && substitute2 != ML_G2_UNDEF && v == missing[1] ) {
             v = substitute2;
         }
         Store_double_field( ml_data, i, v );
