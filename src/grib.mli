@@ -24,10 +24,6 @@ module Message :
       ?perm:Batteries.File.permission ->
       mode:Batteries.File.open_out_flag list ->
       t list -> string -> unit
-
-    (** [get_values m] is a shortcut command to retrieve the floating point
-        values from the message [m]. *)
-    val get_values : t -> float array
   end
 module Inventory :
   sig

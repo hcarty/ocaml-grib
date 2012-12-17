@@ -29,58 +29,6 @@
 // The GRIB API sometimes returns very short lengths for strings
 #define MIN_STRING_LENGTH 256
 
-// An all-in-one function to extract a set of double-precision floating point
-// values from a grib message in byte/string form.
-value ml_grib_get_double_array_easy( value data ) {
-    // The raw string/byte data
-    CAMLparam1( data );
-    // The extracted floating-point data
-    CAMLlocal1( numbers );
-
-    // Treat the given string like a raw blob of bytes
-    void *data_ptr;
-    data_ptr = (void *) String_val( data );
-
-    // Length of the data in bytes
-    size_t length;
-    length = caml_string_length( data );
-
-    // Create a GRIB handle
-    grib_handle *handle;
-    handle = grib_handle_new_from_message( NULL, data_ptr, length );
-
-    // Get the number of data points in the message
-    size_t in_size;
-    GRIB_CHECK( grib_get_size( handle, "values", &in_size ), 0 );
-
-    // Delete the GRIB handle
-    GRIB_CHECK( grib_handle_delete( handle ), 0 );
-
-    size_t out_size;
-
-    out_size = in_size;
-
-    // Allocate an array to hold the output data
-    numbers = caml_alloc( in_size * Double_wosize, Double_array_tag );
-
-    // Create a new handle because the GC may have moved the value data during
-    // the allocation for numbers above.
-    data_ptr = (void *) String_val( data );
-    handle = grib_handle_new_from_message( NULL, data_ptr, length );
-
-    // Retrieve the actual values from the GRIB message
-    GRIB_CHECK( grib_get_double_array( handle, "values", (double *) numbers, &out_size ), 0 );
-
-    // TODO: Add OCaml error checking!
-    // TODO: Confirm in_size == out_size
-
-    // Delete the GRIB handle
-    GRIB_CHECK( grib_handle_delete( handle ), 0 );
-
-    // Return the actual data values!
-    CAMLreturn( numbers );
-}
-
 //
 //
 // Working with GRIB handles

@@ -38,10 +38,3 @@ let save_list ?perm ~mode m filename =
 let save ?perm ~mode m filename =
   save_list ?perm ~mode [m] filename
 
-external get_double_array_easy : string -> float array =
-  "ml_grib_get_double_array_easy"
-
-(** [get_values m] retrieves the values contained in the GRIB message [m]. *)
-let get_values m =
-  get_double_array_easy m
-
