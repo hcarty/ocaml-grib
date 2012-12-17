@@ -13,10 +13,7 @@ external reset : t -> unit = "ml_grib_iterator_reset"
 external delete : t -> unit = "ml_grib_iterator_delete"
 
 let iterator_in f h =
-  let i = of_handle h in
-  let result = f i in
-  delete i;
-  result
+  with_dispose ~dispose:delete f (of_handle h)
 
 let iter f h =
   iterator_in (

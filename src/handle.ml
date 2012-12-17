@@ -1,3 +1,5 @@
+open Batteries
+
 type t
 type file_t
 
@@ -118,10 +120,7 @@ external of_sample : string -> t = "ml_grib_handle_new_from_samples"
 (** [map_sample f sample] applies [f] to the handle based on [sample].
     [sample] refers to one of the samples which come with the GRIB API. *)
 let map_sample f sample =
-  let handle = of_sample sample in
-  let result = f handle in
-  delete handle;
-  result
+  with_dispose ~dispose:delete f (of_sample sample)
 
 (** [open_file name] opens the file [name] for reading. *)
 external open_file : string -> file_t = "ml_grib_open_file"
@@ -138,8 +137,7 @@ let iter f t =
   while !continue do
     match next_handle t with
     | Some handle ->
-        f handle;
-        delete handle;
+        with_dispose ~dispose:delete f handle
     | None ->
         (* Break out of the loop when we are out of handles *)
         continue := false;
@@ -151,8 +149,7 @@ let map f t =
   let rec inner l =
     match next_handle t with
     | Some handle ->
-        let result = f handle in
-        delete handle;
+        let result = with_dispose ~dispose:delete f handle in
         inner (result :: l)
     | None -> List.rev l
   in
@@ -164,8 +161,7 @@ let filter_map f t =
   let rec inner l =
     match next_handle t with
     | Some handle ->
-        let result = f handle in
-        delete handle;
+        let result = with_dispose ~dispose:delete f handle in
         (* Drop the entry if [f handle] returns [None] *)
         let new_l =
           match result with
@@ -179,10 +175,7 @@ let filter_map f t =
 
 (** Apply [f] to the file handle from [filename]. *)
 let with_file_in filename f =
-  let fin = open_file filename in
-  let result = f fin in
-  close_file fin;
-  result
+  with_dispose ~dispose:close_file f (open_file filename)
 
 (** Like [iter], but starting with a file *)
 let iter_file f filename =
@@ -199,18 +192,12 @@ let filter_map_file f filename =
 (** [map_message f m] applies [f] to the {!Handle.t} associated with the
     message [m]. *)
 let map_message f m =
-  let handle = of_message m in
-  let result = f handle in
-  delete handle;
-  result
+  with_dispose ~dispose:delete f (of_message m)
 
 (** [apply_message f m] applies [f] to the {!Handle.t} associated with the
     message [m]. *)
 let apply_message f m =
-  let handle = of_message m in
-  f handle;
-  delete handle;
-  ()
+  with_dispose ~dispose:delete f (of_message m)
 
 (** Iterating over keys *)
 
@@ -238,48 +225,48 @@ module Keys = struct
     "ml_grib_keys_iterator_delete"
 
   let map ?(flags = [ALL_KEYS]) ?namespace f h =
-    let iterator = iterator_new h flags namespace in
-    let rec inner l =
-      match iterator_next iterator with
-      | Some key ->
-          let result = f key in
-          inner (result :: l)
-      | None ->
-          List.rev l
-    in
-    let result = inner [] in
-    iterator_delete iterator;
-    result
+    with_dispose ~dispose:iterator_delete (
+      fun iterator ->
+        let rec inner l =
+          match iterator_next iterator with
+          | Some key ->
+              let result = f key in
+              inner (result :: l)
+          | None ->
+              List.rev l
+        in
+        inner []
+    ) (iterator_new h flags namespace)
 
   let iter ?(flags = [ALL_KEYS]) ?namespace f h =
-    let iterator = iterator_new h flags namespace in
-    let continue = ref true in
-    while !continue do
-      match iterator_next iterator with
-      | Some key ->
-          f key
-      | None ->
-          continue := false
-    done;
-    iterator_delete iterator;
-    ()
+    with_dispose ~dispose:iterator_delete (
+      fun iterator ->
+        let continue = ref true in
+        while !continue do
+          match iterator_next iterator with
+          | Some key ->
+              f key
+          | None ->
+              continue := false
+        done
+    ) (iterator_new h flags namespace)
 
   let filter_map ?(flags = [ALL_KEYS]) ?namespace f h =
-    let iterator = iterator_new h flags namespace in
-    let rec inner l =
-      match iterator_next iterator with
-      | Some key ->
-          (* Only add to the list if (f key) <> None *)
-          let new_l =
-            match f key with
-            | Some result -> result :: l
-            | None -> l
-          in
-          inner new_l
-      | None ->
-          List.rev l
-    in
-    let result = inner [] in
-    iterator_delete iterator;
-    result
+    with_dispose ~dispose:iterator_delete (
+      fun iterator ->
+        let rec inner l =
+          match iterator_next iterator with
+          | Some key ->
+              (* Only add to the list if (f key) <> None *)
+              let new_l =
+                match f key with
+                | Some result -> result :: l
+                | None -> l
+              in
+              inner new_l
+          | None ->
+              List.rev l
+        in
+        inner []
+    ) (iterator_new h flags namespace)
 end

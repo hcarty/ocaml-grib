@@ -1,6 +1,6 @@
 OASISFormat: 0.3
 Name:        ocaml-grib
-Version:     0.9.4
+Version:     0.9.5
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
 License:     MIT
