@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 76f23cd6e71118c10d300ed7fc3f762d)
-version = "0.9.4"
+# DO NOT EDIT (digest: c48653eed069dcc6488488962995d19b)
+version = "0.9.5"
 description = "Bindings for the ECMWF GRIB API"
 requires = "batteries pcre"
 archive(byte) = "grib.cma"
