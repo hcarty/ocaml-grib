@@ -23,6 +23,9 @@ external size : t -> string -> int = "ml_grib_index_get_size"
 
 external next_handle : t -> Handle.t option = "ml_grib_handle_new_from_index"
 
+external write : t -> string -> unit = "ml_grib_index_write"
+external read : string -> t = "ml_grib_index_read"
+
 let double_key k v = Double (k, v)
 let long_key k v = Long (k, v)
 let string_key k v = String (k, v)

@@ -1,3 +1,8 @@
+0.9.6
+* Add functions for reading/writing GRIB indexes from/to disk
+0.9.5
+* Safer Grib.Handle and Grib.Iterator functions
+* Remove Grib.Message.get_values
 0.9.4
 * Only replace missing values in G2clib.get_values when a replacement
   value is explicitly passed
