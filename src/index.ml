@@ -103,3 +103,11 @@ let get index kvs f =
   | hd :: [] -> Some hd
   | _ -> invalid_arg "Multiple results from GRIB index"
 
+(** [get_exn index kvs f] is like {!get} but raises an exception rather than
+    returning [None].
+
+    @raise Not_found if no messages matching [kvs] are in [index]. *)
+let get_exn index kvs f =
+  match get index kvs f with
+  | Some x -> x
+  | None -> raise Not_found
