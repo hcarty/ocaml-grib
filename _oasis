@@ -22,7 +22,7 @@ Flag libjpeg
 
 Flag openjpeg
   Description: Use openjpeg for JPEG2000 support
-  Default$: flag(jpeg) && false
+  Default$: flag(jpeg) && true
 
 Flag png
   Description: Link with libpng

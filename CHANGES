@@ -1,6 +1,8 @@
 0.9.6
 * Add functions for reading/writing GRIB indexes from/to disk
 * Add Grib.Index.get_exn
+* Link against openjpeg by default; a placeholder until pkg-config
+  support is added.
 0.9.5
 * Safer Grib.Handle and Grib.Iterator functions
 * Remove Grib.Message.get_values
