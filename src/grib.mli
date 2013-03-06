@@ -265,9 +265,17 @@ module Index :
     val delete : t -> unit
 
     (** [get index kvs f] will apply [f] to the handle in [index] which
-        matches [kvs].  If no messages match, [None] is returned.  If
-        multiple messages match, [Invalid_argument] is raised. *)
+        matches [kvs].  If no messages match, [None] is returned.
+
+        @raise Invalid_argument if multiple messages match *)
     val get : t -> kv list -> (Handle.t -> 'a) -> 'a option
+
+    (** [get_exn index kvs f] is like {!get} except that it raises an exception
+        if no messages match [kvs].
+
+        @raise Not_found if no messages match [kvs]
+        @raise Invalid_argument if multiple messages match *)
+    val get_exn : t -> kv list -> (Handle.t -> 'a) -> 'a
 
     (** [with_file_in ?init filename keys f] will call [f] with the index from
         [filename], keyed on [keys]. [init] can be used to initialize the index
@@ -288,6 +296,12 @@ module Index :
     (** [iter_file f filename keys] is equivalent to calling
         [with_file_in filename keys (iter f)] *)
     val iter_file : (Handle.t -> unit) -> string -> kv list -> unit
+
+    (** [write index filename] writes [index] out to [filename]. *)
+    val write : t -> string -> unit
+
+    (** [read filename] reads [index] from [filename]. *)
+    val read : string -> t
   end
 module Iterator :
   sig

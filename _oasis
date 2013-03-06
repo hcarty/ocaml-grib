@@ -1,6 +1,6 @@
 OASISFormat: 0.3
 Name:        ocaml-grib
-Version:     0.9.5
+Version:     0.9.6
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
 License:     MIT
@@ -22,7 +22,7 @@ Flag libjpeg
 
 Flag openjpeg
   Description: Use openjpeg for JPEG2000 support
-  Default$: flag(jpeg) && false
+  Default$: flag(jpeg) && true
 
 Flag png
   Description: Link with libpng

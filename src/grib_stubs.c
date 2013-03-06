@@ -470,6 +470,32 @@ value ml_grib_handle_new_from_index( value index ) {
     }
 }
 
+// Write an index out to a file
+value ml_grib_index_write( value index, value filename ) {
+    CAMLparam2( index, filename );
+
+    GRIB_CHECK(
+            grib_index_write( Index_val( index ), String_val( filename ) ),
+            0
+    );
+
+    CAMLreturn( Val_unit );
+}
+
+// Read an index from a file
+value ml_grib_index_read( value filename ) {
+    CAMLparam1( filename );
+
+    grib_index *index;
+    int error;
+
+    index = grib_index_read( NULL, String_val( filename ), &error );
+
+    GRIB_CHECK( error, 0 );
+
+    CAMLreturn( (value)index );
+}
+
 //
 //
 // Working with GRIB iterators
