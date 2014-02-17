@@ -1,9 +1,9 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: aa945c466f1cdc2e6e73b6529f261842) *)
+(* DO NOT EDIT (digest: e1ecc538786caee68d36213aa8de72d1) *)
 This is the INSTALL file for the ocaml-grib distribution.
 
 This package uses OASIS to generate its build system. See section OASIS for
-full information. 
+full information.
 
 Dependencies
 ============
@@ -25,7 +25,7 @@ Installing
 Uninstalling
 ============
 
-1. Go to the root of the package 
+1. Go to the root of the package
 2. Run 'ocaml setup.ml -uninstall'
 
 OASIS
