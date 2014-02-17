@@ -1,9 +1,11 @@
 OASISFormat: 0.3
 Name:        ocaml-grib
-Version:     0.9.6
+Version:     0.9.7
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
+Maintainers: Hezekiah M. Carty <hez@0ok.org>
 License:     MIT
+Homepage:    https://github.com/hcarty/ocaml-grib
 Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
 XStdFilesAUTHORS: false
 XStdFilesREADME: false
@@ -18,7 +20,7 @@ Flag jasper
 
 Flag libjpeg
   Description: Use libjpeg for JPEG2000 support
-  Default$: flag(jpeg) && false
+  Default$: flag(jpeg) && true
 
 Flag openjpeg
   Description: Use openjpeg for JPEG2000 support
@@ -109,3 +111,7 @@ Library grib
     CCLib+: -lpng
   CCLib+:         -lm
 
+SourceRepository master
+  Type:     git
+  Location: https://github.com/hcarty/ocaml-grib.git
+  Browser:  https://github.com/hcarty/ocaml-grib

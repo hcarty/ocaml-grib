@@ -1,0 +1,10 @@
+depexts: [
+  [
+    ["debian"]
+    ["libjpeg-dev" "libjasper-dev" "libopenjpeg-dev" "libgrib-api-dev"]
+  ]
+  [
+    ["ubuntu"]
+    ["libjpeg-dev" "libjasper-dev" "libopenjpeg-dev" "libgrib-api-dev"]
+  ]
+]
