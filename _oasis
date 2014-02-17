@@ -3,7 +3,9 @@ Name:        ocaml-grib
 Version:     0.9.6
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
+Maintainers: Hezekiah M. Carty <hez@0ok.org>
 License:     MIT
+Homepage:    https://github.com/hcarty/ocaml-grib
 Plugins:     META (0.3), StdFiles (0.3), DevFiles (0.3)
 XStdFilesAUTHORS: false
 XStdFilesREADME: false
@@ -109,3 +111,7 @@ Library grib
     CCLib+: -lpng
   CCLib+:         -lm
 
+SourceRepository master
+  Type:     git
+  Location: https://github.com/hcarty/ocaml-grib.git
+  Browser:  https://github.com/hcarty/ocaml-grib
