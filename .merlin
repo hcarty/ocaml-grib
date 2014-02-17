@@ -1,0 +1,3 @@
+PKG batteries pcre
+S src/
+B _build/src/
