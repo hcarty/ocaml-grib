@@ -1,3 +1,5 @@
+0.9.7
+* Metadata updates for better/safer opam integration
 0.9.6
 * Add functions for reading/writing GRIB indexes from/to disk
 * Add Grib.Index.get_exn
