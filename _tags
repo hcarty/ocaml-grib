@@ -1,8 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: b9d3056f5cd72b48c29e901954d0e6dc)
+# DO NOT EDIT (digest: 1d4e30cccdba7d83a36f4ac9a127f971)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
+true: annot, bin_annot
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
 ".bzr": -traverse
@@ -23,7 +24,7 @@
 "src/multi.cmx": for-pack(Grib)
 "src/nearest.cmx": for-pack(Grib)
 "src/g2clib.cmx": for-pack(Grib)
-<src/*.ml{,i}>: oasis_library_grib_ccopt
+<src/*.ml{,i,y}>: oasis_library_grib_ccopt
 "src/grib_stubs.c": oasis_library_grib_ccopt
 "src/g2clib_stubs.c": oasis_library_grib_ccopt
 "src/g2clib-src/cmplxpack.c": oasis_library_grib_ccopt
@@ -76,8 +77,8 @@
 "src/libgrib_stubs.a": oasis_library_grib_cclib
 "src/dllgrib_stubs.so": oasis_library_grib_cclib
 <src/grib.{cma,cmxa}>: use_libgrib_stubs
-<src/*.ml{,i}>: pkg_batteries
-<src/*.ml{,i}>: pkg_pcre
+<src/*.ml{,i,y}>: pkg_batteries
+<src/*.ml{,i,y}>: pkg_pcre
 "src/grib_stubs.c": pkg_batteries
 "src/grib_stubs.c": pkg_pcre
 "src/g2clib_stubs.c": pkg_batteries

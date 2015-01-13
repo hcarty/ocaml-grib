@@ -1,5 +1,6 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: e1ecc538786caee68d36213aa8de72d1) *)
+(* DO NOT EDIT (digest: a2d55eede2754b5058c6cd2b06ed56fb) *)
+
 This is the INSTALL file for the ocaml-grib distribution.
 
 This package uses OASIS to generate its build system. See section OASIS for
@@ -9,6 +10,7 @@ Dependencies
 ============
 
 In order to compile this package, you will need:
+
 * ocaml
 * findlib
 * batteries
