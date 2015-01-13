@@ -3,6 +3,12 @@ module Message :
     (** The type of a GRIB message *)
     type t
 
+    (** [of_bytes b] returns a message made up of the bytes in [b]. *)
+    val of_bytes : Bytes.t -> t
+
+    (** [to_bytes t] returns a {Bytes.t} containing the bytes from [t]. *)
+    val to_bytes : t -> Bytes.t
+
     (** [of_string s] returns a message made up of the bytes in [s]. *)
     val of_string : string -> t
 
