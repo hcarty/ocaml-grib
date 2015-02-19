@@ -1,58 +1,102 @@
 open Batteries
 
-type t
+type index
 
-type kv =
-  | Double of (string * float)
-  | Long of (string * int)
-  | String of (string * string)
+type t = {
+  index : index;
+  mutable closed : bool;
+}
 
-external create : string -> t = "ml_grib_index_new"
-external from_file : string -> string -> t = "ml_grib_index_new_from_file"
-external add_file : t -> string -> unit = "ml_grib_index_add_file"
+type vt =
+  | Double of float
+  | Long of int
+  | String of string
+
+type kv = {
+  k : string;
+  v : vt;
+}
+
+exception Invalid_index
+
+external create : string -> index = "ml_grib_index_new"
+external from_file : string -> string -> index = "ml_grib_index_new_from_file"
+external add_file : index -> string -> unit = "ml_grib_index_add_file"
+
+external delete : index -> unit = "ml_grib_index_delete"
+
+let delete ({ index; closed } as t) =
+  if closed then (
+    (* Nothing to do *)
+  )
+  else (
+    delete index;
+    t.closed <- true;
+  )
+
+let init index =
+  let t = { index; closed = false } in
+  Gc.finalise delete t;
+  t
 
 let create keys =
   let keys = String.concat "," keys in
-  create keys
+  init (create keys)
 
 let of_file filename keys =
   let keys = String.concat "," keys in
-  from_file filename keys
+  init (from_file filename keys)
 
-external delete : t -> unit = "ml_grib_index_delete"
+let use { index; closed } f =
+  if closed then raise Invalid_index;
+  f index
 
-external select_double : t -> string -> float -> unit = "ml_grib_index_select_double"
-external select_long : t -> string -> int -> unit = "ml_grib_index_select_long"
-external select_string : t -> string -> string -> unit = "ml_grib_index_select_string"
+let add_file index filename =
+  use index (fun i -> add_file i filename)
 
-external size : t -> string -> int = "ml_grib_index_get_size"
+external select_double : index -> string -> float -> unit = "ml_grib_index_select_double"
+external select_long : index -> string -> int -> unit = "ml_grib_index_select_long"
+external select_string : index -> string -> string -> unit = "ml_grib_index_select_string"
 
-external next_handle : t -> Handle.t option = "ml_grib_handle_new_from_index"
+external size : index -> string -> int = "ml_grib_index_get_size"
 
-external write : t -> string -> unit = "ml_grib_index_write"
-external read : string -> t = "ml_grib_index_read"
+external next_handle : index -> Handle.t option = "ml_grib_handle_new_from_index"
+let next_handle index =
+  use index next_handle
 
-let double_key k v = Double (k, v)
-let long_key k v = Long (k, v)
-let string_key k v = String (k, v)
+external write : index -> string -> unit = "ml_grib_index_write"
+external read : string -> index = "ml_grib_index_read"
+
+let write index filename =
+  use index (fun i -> write i filename)
+
+let read filename =
+  init (read filename)
+
+let double_key k v = { k; v = Double v }
+let long_key k v = { k; v = Long v }
+let string_key k v = { k; v = String v }
 
 let float_key = double_key
 let int_key = long_key
 
-let select index kv =
-  match kv with
-  | Double (k, d) -> select_double index k d
-  | Long (k, l) -> select_long index k l
-  | String (k, s) -> select_string index k s
+let select_float index k v =
+  use index (fun i -> select_double i k v)
+
+let select_int index k v =
+  use index (fun i -> select_long i k v)
+
+let select_string index k v =
+  use index (fun i -> select_string i k v)
+
+let select index { k; v } =
+  match v with
+  | Double d -> select_float index k d
+  | Long l -> select_int index k l
+  | String s -> select_string index k s
 
 let keys_of_kvs l =
-  List.map (
-    fun kv ->
-      match kv with
-      | Double (k, _)
-      | Long (k, _)
-      | String (k, _) -> k
-  ) l
+  List.map (fun { k; _ } -> k) l
 
 let apply_kvs index l =
   List.iter (select index) l

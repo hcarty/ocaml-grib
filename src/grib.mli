@@ -246,6 +246,9 @@ module Index :
     (** The type of a GRIB index *)
     type t
 
+    exception Invalid_index
+    (** Raised if an index is used after being passed to {!delete}. *)
+
     (** An indexing key-value type *)
     type kv
 
@@ -259,6 +262,11 @@ module Index :
     (** [select index kv] selects the subset of values in [index] which
         match [kv]. *)
     val select : t -> kv -> unit
+
+    val select_float : t -> string -> float -> unit
+    val select_int : t -> string -> int -> unit
+    val select_string : t -> string -> string -> unit
+    (** [select_* t k v] selects [k]ey and [v]alue on [t]. *)
 
     (** [keys_of_kvs kvs] extracts the keys from the list of [kvs] to ease, for
         example, passing the [keys] argument to {!with_file_in}. *)
@@ -274,7 +282,9 @@ module Index :
     (** [of_file filename keys] returns an index on [filename] over [keys]. *)
     val of_file : string -> string list -> t
 
-    (** [delete index] deletes [index] and frees the underlying resources. *)
+    (** [delete index] deletes [index] and frees the underlying resources.
+        This will be called automatically if the index is garbage collected and
+        the index is not already closed. *)
     val delete : t -> unit
 
     (** [get index kvs f] will apply [f] to the handle in [index] which
