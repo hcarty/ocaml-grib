@@ -7,7 +7,13 @@ type kv =
   | Long of (string * int)
   | String of (string * string)
 
+external create : string -> t = "ml_grib_index_new"
 external from_file : string -> string -> t = "ml_grib_index_new_from_file"
+external add_file : t -> string -> unit = "ml_grib_index_add_file"
+
+let create keys =
+  let keys = String.concat "," keys in
+  create keys
 
 let of_file filename keys =
   let keys = String.concat "," keys in

@@ -264,6 +264,13 @@ module Index :
         example, passing the [keys] argument to {!with_file_in}. *)
     val keys_of_kvs : kv list -> string list
 
+    (** [create keys] creates an empty index over [keys]. *)
+    val create : string list -> t
+
+    (** [add_file index filename] will add the messages from [filename] to
+        [index]. *)
+    val add_file : t -> string -> unit
+
     (** [of_file filename keys] returns an index on [filename] over [keys]. *)
     val of_file : string -> string list -> t
 

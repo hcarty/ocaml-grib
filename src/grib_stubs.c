@@ -383,6 +383,20 @@ value ml_grib_handle_new_from_file( value file ) {
 //
 //
 
+// Create a new index from a set a keys
+value ml_grib_index_new( value keys ) {
+    CAMLparam1( keys );
+
+    grib_index *index;
+    int error;
+
+    index = grib_index_new( NULL, String_val( keys ), &error );
+
+    GRIB_CHECK( error, 0 );
+
+    CAMLreturn( (value)index );
+}
+
 // Create a new index from a file
 value ml_grib_index_new_from_file( value filename, value keys ) {
     CAMLparam2( filename, keys );
@@ -395,6 +409,15 @@ value ml_grib_index_new_from_file( value filename, value keys ) {
     GRIB_CHECK( error, 0 );
 
     CAMLreturn( (value)index );
+}
+
+// Add a file to an index
+value ml_grib_index_add_file( value index, value filename ) {
+    CAMLparam2( index, filename );
+
+    GRIB_CHECK( grib_index_add_file( Index_val( index ), String_val( filename ) ), 0 );
+
+    CAMLreturn( Val_unit );
 }
 
 // Delete an index
