@@ -70,25 +70,11 @@ let fold ?kvs f t accu_init =
 
 (** Iterate [f] over each handle included in [t]. *)
 let iter ?kvs f t =
-  Option.may (apply_kvs t) kvs;
-  let rec loop () =
-    match next_handle t with
-    | None -> ()
-    | Some handle -> with_dispose ~dispose:Handle.delete f handle
-  in
-  loop ()
+  fold ?kvs (fun h () -> f h) t ()
 
 (** Apply [f] to each handle included in [t]. *)
 let map ?kvs f t =
-  Option.may (apply_kvs t) kvs;
-  let rec inner l =
-    match next_handle t with
-    | Some handle ->
-        let result = with_dispose ~dispose:Handle.delete f handle in
-        inner (result :: l)
-    | None -> List.rev l
-  in
-  inner []
+  List.rev (fold ?kvs (fun h l -> f h :: l) t [])
 
 (** Apply [f] on the index from [filename], optionally initializing the index
     with the (key, value) pairs from [init]. *)
