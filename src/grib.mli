@@ -73,6 +73,9 @@ module Handle :
     (** The type of a GRIB handle *)
     type t
 
+    exception Invalid_handle
+    (** Raised if a handle is used after being closed *)
+
     (** Potential value types for generic getters/setters *)
     type value_type_t =
       | TYPE_STRING
@@ -194,6 +197,9 @@ module Handle :
     (** [map_sample f sample] applies [f] to the handle based on [sample].
         [sample] refers to one of the samples which come with the GRIB API. *)
     val map_sample : (t -> 'a) -> string -> 'a
+
+    (** [fold_file f filename init] folds over the messages in [filename]. *)
+    val fold_file : (t -> 'a -> 'a) -> string -> 'a -> 'a
 
     (** [map_file f filename] applies [f] to each handle in [filename] and
         returns the results as a list. *)
