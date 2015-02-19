@@ -184,6 +184,15 @@ module Handle :
         take a {!value_t} rather than a native type. *)
     val set : t -> string -> value_t -> unit
 
+    val of_message : Message.t -> t
+    (** [of_message m] returns a handle using the data in [m]. *)
+
+    val of_sample : string -> t
+    (** [of_sample name] returns a handle using the data from sample [name]. *)
+
+    val delete : t -> unit
+    (** [delete t] frees resources associated with [t]. *)
+
     (** {3 Iterators} *)
 
     (** [map_message f m] applies [f] to the {!Handle.t} associated with the
