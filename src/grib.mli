@@ -58,10 +58,10 @@ module Inventory :
 
         Multi-field GRIB message entries will be filtered appropriately so that
         each message is only downloaded once.
-        
+
         N.B. This will not work as expected if multiple messages with the same
         [(field, level)] names exist in [inventory].
-        
+
         Raises [Not_found] if any values in [entries] are
         not found in [inventory]. *)
     val get_ranges :
@@ -295,12 +295,17 @@ module Index :
         to a specific set of [key, value] pairs. *)
     val with_file_in : ?init:kv list -> string -> string list -> (t -> 'a) -> 'a
 
-    (** [map f index] applies [f] to each handle in [index] and
-        returns the results as a list. *)
-    val map : (Handle.t -> 'a) -> t -> 'a list
+    (** [fold ?kvs f index init] folds [f] over each handle selected from [t],
+        optionally initializing with [kvs]. *)
+    val fold : ?kvs:kv list -> (Handle.t -> 'a -> 'a) -> t -> 'a -> 'a
 
-    (** [iter f index] applies [f] to each handle in [index]. *)
-    val iter : (Handle.t -> unit) -> t -> unit
+    (** [map f index] applies [f] to each handle in [index], optionally
+        initializing with [kvs], and returns the results as a list. *)
+    val map : ?kvs:kv list -> (Handle.t -> 'a) -> t -> 'a list
+
+    (** [iter f index] applies [f] to each handle in [index], optionally
+        initializing with [kvs]. *)
+    val iter : ?kvs:kv list -> (Handle.t -> unit) -> t -> unit
 
     (** [map_file f filename keys] is equivalent to calling
         [with_file_in filename keys (map f)] *)

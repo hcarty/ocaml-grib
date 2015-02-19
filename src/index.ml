@@ -57,21 +57,30 @@ let keys_of_kvs l =
 let apply_kvs index l =
   List.iter (select index) l
 
-(** Iterate [f] over each handle included in [t]. *)
-let iter f t =
-  let continue = ref true in
-  while !continue do
+(** Fold [f] over each handle included in [t]. *)
+let fold ?kvs f t accu_init =
+  Option.may (apply_kvs t) kvs;
+  let rec loop accu =
     match next_handle t with
+    | None -> accu
     | Some handle ->
-        with_dispose ~dispose:Handle.delete f handle
-    | None ->
-        (* Break out of the loop when we are out of handles *)
-        continue := false;
-  done;
-  ()
+      with_dispose ~dispose:Handle.delete (fun h -> f h accu) handle
+  in
+  loop accu_init
+
+(** Iterate [f] over each handle included in [t]. *)
+let iter ?kvs f t =
+  Option.may (apply_kvs t) kvs;
+  let rec loop () =
+    match next_handle t with
+    | None -> ()
+    | Some handle -> with_dispose ~dispose:Handle.delete f handle
+  in
+  loop ()
 
 (** Apply [f] to each handle included in [t]. *)
-let map f t =
+let map ?kvs f t =
+  Option.may (apply_kvs t) kvs;
   let rec inner l =
     match next_handle t with
     | Some handle ->
