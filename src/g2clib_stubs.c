@@ -75,7 +75,7 @@ value ml_g2_getfld( value message, value field_num, value unpack, value expand )
     int result;
     gribfield *field;
 
-    result = g2_getfld( String_val( message ), Int_val( field_num ), Bool_val( unpack ), Bool_val( expand ), &field );
+    result = g2_getfld( (unsigned char *)String_val( message ), Int_val( field_num ), Bool_val( unpack ), Bool_val( expand ), &field );
 
     // Raise an exception if we fail to extract a field
     if ( result != 0 ) {
@@ -96,7 +96,7 @@ value ml_g2_getfld_handle( value handle, value field_num, value unpack, value ex
 
     // Get a pointer to the message embedded in the handle.  No copying is
     // required because the message isn't being passed back to OCaml.
-    GRIB_CHECK( grib_get_message( Handle_val( handle ), &message, &size ), 0 );
+    GRIB_CHECK( grib_get_message( Handle_val( handle ), (const void **)&message, &size ), 0 );
 
     result = g2_getfld( (unsigned char *)message, Int_val( field_num ), Bool_val( unpack ), Bool_val( expand ), &field );
 
