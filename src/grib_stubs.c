@@ -385,7 +385,7 @@ value ml_grib_handle_new_from_file( value file ) {
 
 // Create a new index from a file
 value ml_grib_index_new_from_file( value filename, value keys ) {
-    CAMLparam1( filename );
+    CAMLparam2( filename, keys );
 
     grib_index *index;
     int error;
