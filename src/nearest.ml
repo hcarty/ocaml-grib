@@ -20,16 +20,22 @@ type flag_t =
   | SAME_GRID
   | SAME_DATA
 
-external of_handle : Handle.t -> t = "ml_grib_nearest_new"
+external of_handle : Handle.handle -> t = "ml_grib_nearest_new"
+let of_handle h =
+  Handle.use of_handle h
 
 external _find :
-  t -> Handle.t -> float -> float -> int ->
+  t -> Handle.handle -> float -> float -> int ->
   (float array * float array * float array * float array * int array) =
   "ml_grib_nearest_find"
+let _find t handle x y i =
+  Handle.use (fun h -> _find t h x y i) handle
 external _find_multiple :
-  Handle.t -> bool -> float array -> float array ->
+  Handle.handle -> bool -> float array -> float array ->
   (float array * float array * float array * float array * int array) =
   "ml_grib_nearest_find_multiple"
+let _find_multiple handle b xs ys =
+  Handle.use (fun h -> _find_multiple h b xs ys) handle
 
 let int_of_flags l =
   let rec f flags accu =

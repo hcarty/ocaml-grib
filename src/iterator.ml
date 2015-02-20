@@ -2,10 +2,10 @@ open Batteries
 
 type t
 
-external _new : Handle.t -> int -> t = "ml_grib_iterator_new"
+external _new : Handle.handle -> int -> t = "ml_grib_iterator_new"
 
 let of_handle ?(flags = 1) handle =
-  _new handle flags
+  Handle.use_1 _new handle flags
 
 external next : t -> (float * float * float) option = "ml_grib_iterator_next"
 external previous : t -> (float * float * float) option = "ml_grib_iterator_previous"

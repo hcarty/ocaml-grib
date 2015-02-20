@@ -4,7 +4,7 @@ type 'a field_t
 
 external _of_message : Message.t -> int -> unpack:bool -> expand:bool -> 'a field_t
   = "ml_g2_getfld"
-external _of_handle : Handle.t -> int -> unpack:bool -> expand:bool -> 'a field_t
+external _of_handle : Handle.handle -> int -> unpack:bool -> expand:bool -> 'a field_t
   = "ml_g2_getfld_handle"
 
 (* Usable wrappers *)
@@ -23,5 +23,8 @@ let metadata ?(field = 1) message =
   _of_message message field ~unpack:false ~expand:false
 
 let of_handle ?(field = 1) handle =
-  _of_handle handle field ~unpack:true ~expand:true
+  Handle.use (
+    fun h ->
+      _of_handle h field ~unpack:true ~expand:true
+  ) handle
 

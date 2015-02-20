@@ -62,7 +62,10 @@ external size : index -> string -> int = "ml_grib_index_get_size"
 
 external next_handle : index -> Handle.handle option = "ml_grib_handle_new_from_index"
 let next_handle index =
-  use index (fun i -> Handle.init (next_handle i))
+  use index (
+    fun i ->
+      Option.map Handle.init (next_handle i)
+  )
 
 external write : index -> string -> unit = "ml_grib_index_write"
 external read : string -> index = "ml_grib_index_read"
