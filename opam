@@ -1,0 +1,45 @@
+opam-version: "1.2"
+
+name: "grib"
+version: "dev"
+maintainer: "hez@0ok.org"
+author: "Hezekiah M. Carty"
+license: "MIT"
+homepage: "https://github.com/hcarty/ocaml-grib"
+bug-reports: "https://github.com/hcarty/ocaml-grib/issues"
+dev-repo: "https://github.com/hcarty/ocaml-grib.git"
+
+build: [
+  ["ocaml" "setup.ml" "-configure" "--prefix" prefix]
+  ["ocaml" "setup.ml" "-build"]
+]
+install: [
+  ["ocaml" "setup.ml" "-install"]
+]
+#build-doc: ["ocaml" "setup.ml" "-doc"]
+#build-test: [
+#  ["ocaml" "setup.ml" "-configure" "--enable-tests"]
+#  ["ocaml" "setup.ml" "-build"]
+#  ["ocaml" "setup.ml" "-test"]
+#]
+
+remove: [["ocamlfind" "remove" "grib"]]
+
+depends: [
+  "ocamlfind" {build}
+  "base-bytes"
+  "batteries"
+  "pcre"
+#  "ounit" {test}
+]
+
+depexts: [
+  [
+    ["debian"]
+    ["libjpeg-dev" "libjasper-dev" "libopenjpeg-dev" "libgrib-api-dev" "libpng-dev"]
+  ]
+  [
+    ["ubuntu"]
+    ["libjpeg-dev" "libjasper-dev" "libopenjpeg-dev" "libgrib-api-dev" "libpng-dev"]
+  ]
+]

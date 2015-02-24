@@ -1,6 +1,6 @@
 OASISFormat: 0.4
 Name:        ocaml-grib
-Version:     0.9.8
+Version:     0.10.0
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
 Maintainers: Hezekiah M. Carty <hez@0ok.org>
@@ -9,6 +9,7 @@ Homepage:    https://github.com/hcarty/ocaml-grib
 Plugins:     META (0.4), StdFiles (0.4), DevFiles (0.4)
 XStdFilesAUTHORS: false
 XStdFilesREADME: false
+BuildTools: ocamlbuild
 
 Flag jpeg
   Description: Link with a JPEG2000 library
@@ -32,8 +33,7 @@ Flag png
 
 Library grib
   Path:           src
-  BuildTools:     ocamlbuild
-  BuildDepends:   batteries, pcre
+  BuildDepends:   batteries, pcre, bytes
   Pack:           true
   Modules:        Handle,
                   Index,
@@ -110,6 +110,24 @@ Library grib
   if flag(png)
     CCLib+: -lpng
   CCLib+:         -lm
+
+Executable gc_test
+  Path: t
+  MainIs: gc_test.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
+
+Executable get_set
+  Path: t
+  MainIs: get_set.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
 
 SourceRepository master
   Type:     git
