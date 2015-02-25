@@ -65,6 +65,18 @@ let get_native_type = use_1 get_native_type
 external get_double_array : handle -> string -> float array =
   "ml_grib_get_double_array"
 
+external get_double_array_ba :
+  handle -> string ->
+  (float, Bigarray.float64_elt, _) Bigarray.Array1.t ->
+  unit = "ml_grib_get_double_array_ba"
+
+let get_double_array_ba handle key layout =
+  let open Bigarray in
+  let kind = float64 in
+  let data = Array1.create kind layout (get_size handle key) in
+  use_2 get_double_array_ba handle key data;
+  data
+
 (** [get_string_any handle key] returns the elements from [handle] associated
     with [key] as a string, regardless of the native type of [key]. *)
 external get_string_any : handle -> string -> string = "ml_grib_get_string_any"
@@ -89,6 +101,7 @@ let get_double = use_1 get_double
 
 (** Aliases *)
 let get_float_array = get_double_array
+let get_float_array_ba = get_double_array_ba
 let get_as_string = get_string_any
 let get_int = get_long
 let get_float = get_double

@@ -84,6 +84,26 @@ value ml_grib_get_double_array( value handle, value key ) {
     CAMLreturn( data );
 }
 
+value ml_grib_get_double_array_ba( value handle, value key, value data ) {
+    CAMLparam2( handle, key );
+
+    size_t in_size, out_size;
+    int type;
+
+    GRIB_CHECK( grib_get_native_type( Handle_val( handle ), String_val( key ), &type ), 0 );
+
+    if ( type != GRIB_TYPE_DOUBLE ) {
+        caml_invalid_argument( "Incorrect data type" );
+    }
+
+    in_size = Int_val( ml_grib_get_size( handle, key ) );
+    out_size = in_size;
+
+    GRIB_CHECK( grib_get_double_array( Handle_val( handle ), String_val( key ), (double *)Caml_ba_data_val( data ), &out_size ), 0 );
+
+    CAMLreturn( Val_unit );
+}
+
 int ml_native_type_of_int( int c_type ) {
     switch ( c_type ) {
         case GRIB_TYPE_STRING:
