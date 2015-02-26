@@ -129,6 +129,24 @@ Executable get_set
   Install: false
   BuildDepends: grib
 
+Executable message_test
+  Path: t
+  MainIs: message_test.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
+
+Executable handle_test
+  Path: t
+  MainIs: handle_test.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
+
 SourceRepository master
   Type:     git
   Location: https://github.com/hcarty/ocaml-grib.git

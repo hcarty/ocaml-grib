@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 2638a9656ba8e9b0878b275c8cb99014)
+# DO NOT EDIT (digest: 455314f3b2a03819aa923cd64bc261a8)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -229,9 +229,21 @@ true: annot, bin_annot
 <t/get_set.{native,byte}>: pkg_bytes
 <t/get_set.{native,byte}>: pkg_pcre
 <t/get_set.{native,byte}>: use_grib
+<t/get_set.{native,byte}>: custom
+# Executable message_test
+<t/message_test.{native,byte}>: pkg_batteries
+<t/message_test.{native,byte}>: pkg_bytes
+<t/message_test.{native,byte}>: pkg_pcre
+<t/message_test.{native,byte}>: use_grib
+<t/message_test.{native,byte}>: custom
+# Executable handle_test
+<t/handle_test.{native,byte}>: pkg_batteries
+<t/handle_test.{native,byte}>: pkg_bytes
+<t/handle_test.{native,byte}>: pkg_pcre
+<t/handle_test.{native,byte}>: use_grib
 <t/*.ml{,i,y}>: pkg_batteries
 <t/*.ml{,i,y}>: pkg_bytes
 <t/*.ml{,i,y}>: pkg_pcre
 <t/*.ml{,i,y}>: use_grib
-<t/get_set.{native,byte}>: custom
+<t/handle_test.{native,byte}>: custom
 # OASIS_STOP
