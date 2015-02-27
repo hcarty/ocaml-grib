@@ -147,6 +147,33 @@ Executable handle_test
   Install: false
   BuildDepends: grib
 
+Executable index_test
+  Path: t
+  MainIs: index_test.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
+
+Executable nearest_test
+  Path: t
+  MainIs: nearest_test.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
+
+Executable g2clib_test
+  Path: t
+  MainIs: g2clib_test.ml
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  Install: false
+  BuildDepends: grib
+
 SourceRepository master
   Type:     git
   Location: https://github.com/hcarty/ocaml-grib.git

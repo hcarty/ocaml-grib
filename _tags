@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 455314f3b2a03819aa923cd64bc261a8)
+# DO NOT EDIT (digest: 40e8e6840f549e840e433537205fbbcf)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -241,9 +241,27 @@ true: annot, bin_annot
 <t/handle_test.{native,byte}>: pkg_bytes
 <t/handle_test.{native,byte}>: pkg_pcre
 <t/handle_test.{native,byte}>: use_grib
+<t/handle_test.{native,byte}>: custom
+# Executable index_test
+<t/index_test.{native,byte}>: pkg_batteries
+<t/index_test.{native,byte}>: pkg_bytes
+<t/index_test.{native,byte}>: pkg_pcre
+<t/index_test.{native,byte}>: use_grib
+<t/index_test.{native,byte}>: custom
+# Executable nearest_test
+<t/nearest_test.{native,byte}>: pkg_batteries
+<t/nearest_test.{native,byte}>: pkg_bytes
+<t/nearest_test.{native,byte}>: pkg_pcre
+<t/nearest_test.{native,byte}>: use_grib
+<t/nearest_test.{native,byte}>: custom
+# Executable g2clib_test
+<t/g2clib_test.{native,byte}>: pkg_batteries
+<t/g2clib_test.{native,byte}>: pkg_bytes
+<t/g2clib_test.{native,byte}>: pkg_pcre
+<t/g2clib_test.{native,byte}>: use_grib
 <t/*.ml{,i,y}>: pkg_batteries
 <t/*.ml{,i,y}>: pkg_bytes
 <t/*.ml{,i,y}>: pkg_pcre
 <t/*.ml{,i,y}>: use_grib
-<t/handle_test.{native,byte}>: custom
+<t/g2clib_test.{native,byte}>: custom
 # OASIS_STOP
