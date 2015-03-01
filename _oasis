@@ -111,68 +111,27 @@ Library grib
     CCLib+: -lpng
   CCLib+:         -lm
 
-Executable gc_test
+Library test_components
   Path: t
-  MainIs: gc_test.ml
-  Build$: flag(tests)
-  Custom: true
+  Modules: Gc_test,
+           G2clib_test,
+           Get_set,
+           Handle_test,
+           Index_test,
+           Message_test
+  BuildDepends: grib, oUnit
   CompiledObject: best
   Install: false
-  BuildDepends: grib
+  Build$: flag(tests)
 
-Executable get_set
+Executable main
   Path: t
-  MainIs: get_set.ml
+  MainIs: main.ml
   Build$: flag(tests)
   Custom: true
   CompiledObject: best
   Install: false
-  BuildDepends: grib
-
-Executable message_test
-  Path: t
-  MainIs: message_test.ml
-  Build$: flag(tests)
-  Custom: true
-  CompiledObject: best
-  Install: false
-  BuildDepends: grib
-
-Executable handle_test
-  Path: t
-  MainIs: handle_test.ml
-  Build$: flag(tests)
-  Custom: true
-  CompiledObject: best
-  Install: false
-  BuildDepends: grib
-
-Executable index_test
-  Path: t
-  MainIs: index_test.ml
-  Build$: flag(tests)
-  Custom: true
-  CompiledObject: best
-  Install: false
-  BuildDepends: grib
-
-Executable nearest_test
-  Path: t
-  MainIs: nearest_test.ml
-  Build$: flag(tests)
-  Custom: true
-  CompiledObject: best
-  Install: false
-  BuildDepends: grib
-
-Executable g2clib_test
-  Path: t
-  MainIs: g2clib_test.ml
-  Build$: flag(tests)
-  Custom: true
-  CompiledObject: best
-  Install: false
-  BuildDepends: grib
+  BuildDepends: grib, oUnit, test_components
 
 SourceRepository master
   Type:     git

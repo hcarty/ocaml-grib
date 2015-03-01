@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: 65b72fd4c7db4b97a36e8c4a993ed844)
+version = "0.10.0"
+description = "Bindings for the ECMWF GRIB API"
+requires = "grib oUnit"
+archive(byte) = "test_components.cma"
+archive(byte, plugin) = "test_components.cma"
+archive(native) = "test_components.cmxa"
+archive(native, plugin) = "test_components.cmxs"
+exists_if = "test_components.cma"
+# OASIS_STOP
+
