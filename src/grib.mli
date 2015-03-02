@@ -15,6 +15,16 @@ module Message :
     (** [to_string t] returns a string containing the bytes from [t]. *)
     val to_string : t -> string
 
+    val of_bigarray :
+      (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t ->
+      t
+    (** [of_bigarray ba] returns a [t] containing the bytes from [ba]. *)
+
+    val to_bigarray :
+      t ->
+      (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+    (** [to_bigarray ba] returns a bigarray containing the bytes from [t]. *)
+
     (** [save ~mode m filename] saves the message [m] to [filename].
         [mode] specifies if [filename] should be created/overwritten or
         appended to. *)

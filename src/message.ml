@@ -1,5 +1,7 @@
 (** Module for working with GRIB messages *)
 
+open Bigarray
+
 (** The raw GRIB data, able to be processed with the {!Grib} module or written
     directly to disk as a fresh GRIB file. *)
 type t = Bytes.t
@@ -11,6 +13,17 @@ let to_string m =
   Bytes.to_string m
 external of_bytes : Bytes.t -> t = "%identity"
 external to_bytes : t -> Bytes.t = "%identity"
+
+let of_bigarray ba =
+  Bytes.init (Array1.dim ba) (fun i -> Char.chr (Array1.unsafe_get ba i))
+
+let to_bigarray m =
+  let ba = Array1.create int8_unsigned c_layout (Bytes.length m) in
+  Bytes.iteri (
+    fun i c ->
+      Array1.unsafe_set ba i (Char.code c)
+  ) m;
+  ba
 
 (** [save_list ?perm ~mode m filename] saves the GRIB messages [m] to
     [filename].  Use [mode] to specify if the file should be appended to (add
