@@ -17,6 +17,8 @@ let get _ctx =
   let h = Grib.Handle.of_message message in
   assert_bool "editionNumber"
     (edition_number = Grib.Handle.get_int h "editionNumber");
+  assert_bool "editionNumber (as string)"
+    (edition_string = Grib.Handle.get_as_string h "editionNumber");
   assert_bool "name" (name = Grib.Handle.get_string h "name");
   assert_bool "average" (average = Grib.Handle.get_float h "average");
   assert_bool "Ni" (ni = Grib.Handle.get_int h "Ni");
