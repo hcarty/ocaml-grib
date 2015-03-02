@@ -6,6 +6,8 @@ let message _ctx =
   Multi.support_off ();
   Multi.support_on ();
   let message = Handle.map_sample Handle.get_message_copy "GRIB2" in
+  assert_bool "to/of_bigarray"
+    (Message.of_bigarray (Message.to_bigarray message) = message);
   begin
     match Multi.messages_of_multi_message message with
     | [m] -> assert_bool "messages_of_multi_message" (m = message)
