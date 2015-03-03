@@ -186,6 +186,12 @@ module Handle :
     (** [set_double_array handle key x] sets [key] to [x] in [handle]. *)
     val set_double_array : t -> string -> float array -> unit
 
+    (** [set_double_array_ba handle key x] sets [key] to [x] in [handle]. *)
+    val set_double_array_ba :
+      t -> string ->
+      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
+      unit
+
     (** [set_long_array handle key x] sets [key] to [x] in [handle]. *)
     val set_long_array : t -> string -> int array -> unit
 
@@ -200,6 +206,15 @@ module Handle :
 
     (** Alias for {!set_double_array} *)
     val set_float_array : t -> string -> float array -> unit
+
+    (** Alias for {!set_double_array_ba} *)
+    val set_float_array_ba :
+      t -> string ->
+      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
+      unit
+
+    (** Alias for {!set_long_array} *)
+    val set_int_array : t -> string -> int array -> unit
 
     (** Generic value setters which act like the setter fucntions above, but
         take a {!value_t} rather than a native type. *)

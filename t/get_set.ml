@@ -26,6 +26,9 @@ let get _ctx =
   assert_bool "values" (values = Grib.Handle.get_float_array h "values");
   assert_bool "values ba"
     (values_ba = Grib.Handle.get_float_array_ba h "values" Bigarray.c_layout);
+  Grib.Handle.set_float_array_ba h "values" values_ba;
+  assert_bool "values ba (after set)"
+    (values_ba = Grib.Handle.get_float_array_ba h "values" Bigarray.c_layout);
   assert_bool "message" (message = Grib.Handle.get_message_copy h);
   Grib.Handle.delete h;
   ()

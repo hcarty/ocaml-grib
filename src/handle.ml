@@ -148,6 +148,11 @@ external set_string : handle -> string -> string -> unit = "ml_grib_set_string"
 external set_double_array : handle -> string -> float array -> unit =
   "ml_grib_set_double_array"
 
+external set_double_array_ba :
+  handle -> string ->
+  (float, Bigarray.float64_elt, _) Bigarray.Array1.t ->
+  unit = "ml_grib_set_double_array_ba"
+
 (** [set_long_array handle key x] sets [key] to [x] in [handle]. *)
 external set_long_array : handle -> string -> int array -> unit =
   "ml_grib_set_long_array"
@@ -156,12 +161,14 @@ let set_long = use_2 set_long
 let set_double = use_2 set_double
 let set_string = use_2 set_string
 let set_double_array = use_2 set_double_array
+let set_double_array_ba h k v = use_2 set_double_array_ba h k v
 let set_long_array = use_2 set_long_array
 
 (** Aliases *)
 let set_int = set_long
 let set_float = set_double
 let set_float_array = set_double_array
+let set_float_array_ba = set_double_array_ba
 let set_int_array = set_long_array
 
 (** Generic setter *)

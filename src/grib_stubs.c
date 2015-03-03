@@ -265,6 +265,19 @@ value ml_grib_set_double_array( value handle, value key, value val ) {
     CAMLreturn( Val_unit );
 }
 
+// Set data in double array (bigarray) format
+value ml_grib_set_double_array_ba( value handle, value key, value val ) {
+    CAMLparam3( handle, key, val );
+
+    size_t length;
+
+    length = Caml_ba_array_val( val )->dim[0];
+
+    GRIB_CHECK( grib_set_double_array( Handle_val( handle ), String_val( key ), Caml_ba_data_val( val ), length), 0 );
+
+    CAMLreturn( Val_unit );
+}
+
 // Set data in long array format
 value ml_grib_set_long_array( value handle, value key, value val ) {
     CAMLparam3( handle, key, val );
