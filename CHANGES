@@ -1,3 +1,14 @@
+0.10.0
+* double/float arrays to/from bigarrays
+* Add Handle.fold
+* Use GC when possible to cleanup dangling Handle.t and Index.t
+  values.
+* Index.fold and general cleanup
+* More flexible index creation, including support for multi-file
+  indexing.
+* Messages to/from Bytes.t
+* Messages to/from bigarrays
+* Warnings and CAMLparam usage cleanup
 0.9.7
 * Metadata updates for better/safer opam integration
 0.9.6
