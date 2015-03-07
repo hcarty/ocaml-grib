@@ -70,6 +70,13 @@ external get_double_array_ba :
   (float, Bigarray.float64_elt, _) Bigarray.Array1.t ->
   unit = "ml_grib_get_double_array_ba"
 
+let get_double_array_into_ba handle key data =
+  let open Bigarray in
+  if Array1.dim data <> get_size handle key then
+    invalid_arg "get_double_array_into_ba";
+  use_2 get_double_array_ba handle key data;
+  ()
+
 let get_double_array_ba handle key layout =
   let open Bigarray in
   let kind = float64 in
@@ -102,6 +109,7 @@ let get_double = use_1 get_double
 (** Aliases *)
 let get_float_array = get_double_array
 let get_float_array_ba = get_double_array_ba
+let get_float_array_into_ba = get_double_array_into_ba
 let get_as_string = get_string_any
 let get_int = get_long
 let get_float = get_double

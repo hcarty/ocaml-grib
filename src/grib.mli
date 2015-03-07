@@ -121,6 +121,16 @@ module Handle :
       t -> string -> 'a Batteries.Bigarray.layout ->
       (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t
 
+    (** [get_double_array_into_ba handle key data] inserts the elements from
+        [handle] associated with [key] as floating point values into [data].
+
+        @raise Invalid_argument if [data] has a different number of elements
+        than [key]. *)
+    val get_double_array_into_ba :
+      t -> string ->
+      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
+      unit
+
     (** [get_string_any handle key] returns the elements from [handle]
         associated with [key] as a string, regardless of the native type
         of [key].*)
@@ -145,6 +155,12 @@ module Handle :
     val get_float_array_ba :
       t -> string -> 'a Batteries.Bigarray.layout ->
       (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t
+
+    (** Alias for {!get_double_array_into_ba}. *)
+    val get_float_array_into_ba :
+      t -> string ->
+      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
+      unit
 
     (** Alias for {!get_string_any}. *)
     val get_as_string : t -> string -> string
