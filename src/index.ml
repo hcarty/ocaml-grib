@@ -116,7 +116,7 @@ let fold ?kvs f t accu_init =
     match next_handle t with
     | None -> accu
     | Some handle ->
-      with_dispose ~dispose:Handle.delete (fun h -> f h accu) handle
+      loop (with_dispose ~dispose:Handle.delete (fun h -> f h accu) handle)
   in
   loop accu_init
 
