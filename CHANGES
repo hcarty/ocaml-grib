@@ -1,5 +1,6 @@
 0.10.1
 * Add Handle.get_(float|double)_array_into_ba
+* Add Index.(of_files, with_files_in)
 0.10.0
 * double/float arrays to/from bigarrays
 * Add Handle.fold

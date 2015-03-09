@@ -54,6 +54,11 @@ let use { index; closed } f =
 let add_file index filename =
   use index (fun i -> add_file i filename)
 
+let of_files ~files ~keys =
+  let i = create keys in
+  List.iter (add_file i) files;
+  i
+
 external select_double : index -> string -> float -> unit = "ml_grib_index_select_double"
 external select_long : index -> string -> int -> unit = "ml_grib_index_select_long"
 external select_string : index -> string -> string -> unit = "ml_grib_index_select_string"
@@ -131,6 +136,13 @@ let with_file_in ?init filename keys f =
       Option.may (apply_kvs index) init;
       f index
   ) (of_file filename keys)
+
+let with_files_in ?init ~files ~keys f =
+  with_dispose ~dispose:delete (
+    fun index ->
+      Option.may (apply_kvs index) init;
+      f index
+  ) (of_files ~files ~keys)
 
 (** Like [iter], but starting with a file *)
 let iter_file f filename init =

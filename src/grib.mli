@@ -349,6 +349,9 @@ module Index :
     (** [of_file filename keys] returns an index on [filename] over [keys]. *)
     val of_file : string -> string list -> t
 
+    (** [of_files ~files ~keys] returns an index on [files] over [keys]. *)
+    val of_files : files:string list -> keys:string list -> t
+
     (** [delete index] deletes [index] and frees the underlying resources.
         This will be called automatically if the index is garbage collected and
         the index is not already closed. *)
@@ -371,6 +374,12 @@ module Index :
         [filename], keyed on [keys]. [init] can be used to initialize the index
         to a specific set of [key, value] pairs. *)
     val with_file_in : ?init:kv list -> string -> string list -> (t -> 'a) -> 'a
+
+    (** [with_files_in ?init ~files ~keys f] will call [f] with the index from
+        [files], keyed on [keys]. [init] can be used to initialize the index
+        to a specific set of [key, value] pairs. *)
+    val with_files_in :
+      ?init:kv list -> files:string list -> keys:string list -> (t -> 'a) -> 'a
 
     (** [fold ?kvs f index init] folds [f] over each handle selected from [t],
         optionally initializing with [kvs]. *)
