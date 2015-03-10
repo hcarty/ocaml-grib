@@ -1,6 +1,6 @@
 OASISFormat: 0.4
 Name:        ocaml-grib
-Version:     0.10.1
+Version:     0.10.0
 Synopsis:    Bindings for the ECMWF GRIB API
 Authors:     Hezekiah M. Carty
 Maintainers: Hezekiah M. Carty <hez@0ok.org>
@@ -95,7 +95,7 @@ Library grib
                   g2clib-src/grib2.h,
                   g2clib-src/pdstemplates.h
   CCLib:          -lgrib_api
-  CCOpt:          -O2
+  CCOpt:          -O2 -g
   CompiledObject: best
   if flag(jpeg)
     CCOpt+: -DUSE_JPEG2000

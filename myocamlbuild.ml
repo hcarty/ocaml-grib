@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 2de0ee7caae85817c0dbac982c042e3b) *)
+(* DO NOT EDIT (digest: df5fa14c016716dc9e2cd6e1065aab7c) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -625,17 +625,36 @@ let package_default =
        [
           (["oasis_library_grib_ccopt"; "compile"],
             [
-               (OASISExpr.EBool true, S [A "-ccopt"; A "-O2"]);
+               (OASISExpr.EBool true,
+                 S [A "-ccopt"; A "-O2"; A "-ccopt"; A "-g"]);
                (OASISExpr.EFlag "png",
-                 S [A "-ccopt"; A "-O2"; A "-ccopt"; A "-DUSE_PNG"]);
+                 S
+                   [
+                      A "-ccopt";
+                      A "-O2";
+                      A "-ccopt";
+                      A "-g";
+                      A "-ccopt";
+                      A "-DUSE_PNG"
+                   ]);
                (OASISExpr.EFlag "jpeg",
-                 S [A "-ccopt"; A "-O2"; A "-ccopt"; A "-DUSE_JPEG2000"]);
+                 S
+                   [
+                      A "-ccopt";
+                      A "-O2";
+                      A "-ccopt";
+                      A "-g";
+                      A "-ccopt";
+                      A "-DUSE_JPEG2000"
+                   ]);
                (OASISExpr.EAnd
                   (OASISExpr.EFlag "jpeg", OASISExpr.EFlag "png"),
                  S
                    [
                       A "-ccopt";
                       A "-O2";
+                      A "-ccopt";
+                      A "-g";
                       A "-ccopt";
                       A "-DUSE_JPEG2000";
                       A "-ccopt";
@@ -956,6 +975,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 960 "myocamlbuild.ml"
+# 979 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;
