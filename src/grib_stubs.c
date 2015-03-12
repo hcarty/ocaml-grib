@@ -835,12 +835,13 @@ static struct custom_operations nearest_custom_ops = {
 };
 
 value Val_nearest(grib_nearest *n) {
+    CAMLparam0();
+    CAMLlocal1(ret);
     grib_nearest **store;
-    value ret;
     ret = caml_alloc_custom(&nearest_custom_ops, sizeof(n), 0, 1);
     store = Data_custom_val(ret);
     *store = n;
-    return ret;
+    CAMLreturn(ret);
 }
 
 // Create a new nearest value
