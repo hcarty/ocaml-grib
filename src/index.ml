@@ -1,4 +1,4 @@
-open Batteries
+open Bear
 
 type index
 
@@ -97,21 +97,20 @@ let select_int index k v =
 let select_string index k v =
   use index (fun i -> select_string i k v)
 
-let select index { k; v } =
+let select_one index { k; v } =
   match v with
   | Double d -> select_float index k d
   | Long l -> select_int index k l
   | String s -> select_string index k s
 
+let select index kvs =
+  List.iter (select_one index) kvs
+
 let keys_of_kvs l =
   List.map (fun { k; _ } -> k) l
 
-let apply_kvs index l =
-  List.iter (select index) l
-
 (** Fold [f] over each handle included in [t]. *)
-let fold ?kvs f t accu_init =
-  Option.may (apply_kvs t) kvs;
+let fold f t accu_init =
   let rec loop accu =
     match next_handle t with
     | None -> accu
@@ -121,53 +120,25 @@ let fold ?kvs f t accu_init =
   loop accu_init
 
 (** Iterate [f] over each handle included in [t]. *)
-let iter ?kvs f t =
-  fold ?kvs (fun h () -> f h) t ()
+let iter f t =
+  fold (fun h () -> f h) t ()
 
 (** Apply [f] to each handle included in [t]. *)
-let map ?kvs f t =
-  List.rev (fold ?kvs (fun h l -> f h :: l) t [])
+let map f t =
+  List.rev (fold (fun h l -> f h :: l) t [])
 
 (** Apply [f] on the index from [filename], optionally initializing the index
     with the (key, value) pairs from [init]. *)
 let with_file_in ?init filename keys f =
   with_dispose ~dispose:delete (
     fun index ->
-      Option.may (apply_kvs index) init;
+      Option.may (select index) init;
       f index
   ) (of_file filename keys)
 
 let with_files_in ?init ~files ~keys f =
   with_dispose ~dispose:delete (
     fun index ->
-      Option.may (apply_kvs index) init;
+      Option.may (select index) init;
       f index
   ) (of_files ~files ~keys)
-
-(** Like [iter], but starting with a file *)
-let iter_file f filename init =
-  let keys = keys_of_kvs init in
-  with_file_in ~init filename keys (iter f)
-
-(** Like [map]. but starting with a file *)
-let map_file f filename init =
-  let keys = keys_of_kvs init in
-  with_file_in ~init filename keys (map f)
-
-(** [get index kvs f] applies [f] to the handle matched by [kvs] in [index]. *)
-let get index kvs f =
-  apply_kvs index kvs;
-  let matching_fields = map f index in
-  match matching_fields with
-  | [] -> None
-  | hd :: [] -> Some hd
-  | _ -> invalid_arg "Multiple results from GRIB index"
-
-(** [get_exn index kvs f] is like {!get} but raises an exception rather than
-    returning [None].
-
-    @raise Not_found if no messages matching [kvs] are in [index]. *)
-let get_exn index kvs f =
-  match get index kvs f with
-  | Some x -> x
-  | None -> raise Not_found

@@ -1,7 +1,5 @@
 (** Functions for locating nearest neighbor points *)
 
-open Batteries
-
 (** A nearest *)
 type t
 
@@ -16,9 +14,9 @@ type near_t = {
 
 (** Flags for {!find} *)
 type flag_t =
-  | SAME_POINT
-  | SAME_GRID
-  | SAME_DATA
+  | Same_point
+  | Same_grid
+  | Same_data
 
 external of_handle : Handle.handle -> t = "ml_grib_nearest_new"
 let of_handle h =
@@ -43,11 +41,11 @@ let int_of_flags l =
     | [] -> accu
     | hd :: tl -> begin
       match hd with
-      | SAME_POINT ->
+      | Same_point ->
           f tl (1 land accu)
-      | SAME_GRID ->
+      | Same_grid ->
           f tl (2 land accu)
-      | SAME_DATA ->
+      | Same_data ->
           f tl (4 land accu)
     end
   in

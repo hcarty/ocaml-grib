@@ -1,7 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: 65b72fd4c7db4b97a36e8c4a993ed844)
+# DO NOT EDIT (digest: 087050beddc77b3074afd11034bd9cd7)
 version = "0.10.0"
-description = "Bindings for the ECMWF GRIB API"
+description = "Bindings for the ECMWF GRIB API and NCEP's g2clib"
 requires = "grib oUnit"
 archive(byte) = "test_components.cma"
 archive(byte, plugin) = "test_components.cma"

@@ -1,18 +1,16 @@
 (** Module for working with GRIB messages *)
 
+open Bear
 open Bigarray
 
-(** The raw GRIB data, able to be processed with the {!Grib} module or written
-    directly to disk as a fresh GRIB file. *)
-type t = Bytes.t
+type t = bytes
 
-(** Conversion to/from bytes and strings *)
 let of_string s =
   Bytes.of_string s
 let to_string m =
   Bytes.to_string m
-external of_bytes : Bytes.t -> t = "%identity"
-external to_bytes : t -> Bytes.t = "%identity"
+external of_bytes : bytes -> t = "%identity"
+external to_bytes : t -> bytes = "%identity"
 
 let of_bigarray ba =
   Bytes.init (Array1.dim ba) (fun i -> Char.chr (Array1.unsafe_get ba i))
@@ -25,33 +23,13 @@ let to_bigarray m =
   ) m;
   ba
 
-(** [save_list ?perm ~mode m filename] saves the GRIB messages [m] to
-    [filename].  Use [mode] to specify if the file should be appended to (add
-    new GRIB messages to an existing GRIB file) or if the file should be
-    created/overwritten.  Use [perm] to specify the desired file
-    permissions (defaults to current umask settings). *)
-let save_list ?perm ~mode m filename =
-  (* Default to using the user's umask permissions *)
-  let perm =
-    match perm with
-    | None -> Batteries.File.unix_perm 0o666
-    | Some p -> p
-  in
+let save_list mode perm filename m =
   match m with
-  | [] ->
-      (* No messages, nothing to do *)
-      ()
+  | [] -> () (* No messages, nothing to do *)
   | l ->
-      (* Write each message to the file, in order *)
-      Batteries.File.with_file_out ~perm ~mode filename (
-        fun fout ->
-          List.iter (
-            fun b ->
-              Batteries.String.print fout (Bytes.to_string b)
-          ) l
-      )
+    with_dispose ~dispose:close_out
+      (fun oc -> List.iter (output_bytes oc) l)
+      (open_out_gen mode perm filename)
 
-(** [save ?perm ~mode m filename] acts like {!save_list}, acting on one
-    message rather than a list. *)
-let save ?perm ~mode m filename =
-  save_list ?perm ~mode [m] filename
+let save mode perm filename m =
+  save_list mode perm filename [m]

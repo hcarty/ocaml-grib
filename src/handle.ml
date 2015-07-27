@@ -1,4 +1,4 @@
-open Batteries
+open Bear
 
 type handle
 type file_t
@@ -44,9 +44,9 @@ let get_size = use_1 get_size
 
 (** Type for generic getters/setters *)
 type value_type_t =
-  | TYPE_STRING
-  | TYPE_LONG
-  | TYPE_DOUBLE
+  | String_type
+  | Int_type
+  | Float_type
 
 type value_t =
   | String of string
@@ -131,9 +131,9 @@ let get_as_string_opt h k = get_opt_wrapper get_as_string h k
 (** Generic getters *)
 let get h k =
   match get_native_type h k with
-  | TYPE_STRING -> String (get_string h k)
-  | TYPE_LONG -> Int (get_long h k)
-  | TYPE_DOUBLE -> Float (get_double h k)
+  | String_type -> String (get_string h k)
+  | Int_type -> Int (get_long h k)
+  | Float_type -> Float (get_double h k)
 
 let get_opt h k = get_opt_wrapper get h k
 
@@ -220,7 +220,9 @@ let fold f t accu_init =
     match next_handle t with
     | None -> accu
     | Some handle ->
-      let result = with_dispose ~dispose:delete (fun h -> f h accu) handle in
+      let result =
+        with_dispose ~dispose:delete (fun h -> f h accu) handle
+      in
       loop result
   in
   loop accu_init
@@ -269,11 +271,6 @@ let filter_map_file f filename =
 let map_message f m =
   with_dispose ~dispose:delete f (of_message m)
 
-(** [apply_message f m] applies [f] to the {!Handle.t} associated with the
-    message [m]. *)
-let apply_message f m =
-  with_dispose ~dispose:delete f (of_message m)
-
 (** Iterating over keys *)
 
 module Keys = struct
@@ -282,14 +279,14 @@ module Keys = struct
 
   (** Flags to limit which keys we iterate over *)
   type iterator_flag_t =
-    | ALL_KEYS
-    | SKIP_READ_ONLY
-    | SKIP_OPTIONAL
-    | SKIP_EDITION_SPECIFIC
-    | SKIP_CODED
-    | SKIP_COMPUTED
-    | SKIP_DUPLICATES
-    | SKIP_FUNCTION
+    | All_keys
+    | Skip_read_only
+    | Skip_optional
+    | Skip_edition_specific
+    | Skip_coded
+    | Skip_computed
+    | Skip_duplicates
+    | Skip_function
 
   external iterator_new :
     handle -> iterator_flag_t list -> string option -> iterator_t =
@@ -301,7 +298,7 @@ module Keys = struct
 
   let iterator_new = use_2 iterator_new
 
-  let map ?(flags = [ALL_KEYS]) ?namespace f h =
+  let map ?(flags = [All_keys]) ?namespace f h =
     with_dispose ~dispose:iterator_delete (
       fun iterator ->
         let rec inner l =
@@ -315,7 +312,7 @@ module Keys = struct
         inner []
     ) (iterator_new h flags namespace)
 
-  let iter ?(flags = [ALL_KEYS]) ?namespace f h =
+  let iter ?(flags = [All_keys]) ?namespace f h =
     with_dispose ~dispose:iterator_delete (
       fun iterator ->
         let continue = ref true in
@@ -328,7 +325,7 @@ module Keys = struct
         done
     ) (iterator_new h flags namespace)
 
-  let filter_map ?(flags = [ALL_KEYS]) ?namespace f h =
+  let filter_map ?(flags = [All_keys]) ?namespace f h =
     with_dispose ~dispose:iterator_delete (
       fun iterator ->
         let rec inner l =

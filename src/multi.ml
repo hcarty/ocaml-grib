@@ -1,7 +1,5 @@
 (** Functions for handling multi-field GRIB messages *)
 
-open Batteries
-
 (** Turn support on and off for multiple fields in a single message *)
 external support_on : unit -> unit = "ml_grib_multi_support_on"
 external support_off : unit -> unit = "ml_grib_multi_support_off"

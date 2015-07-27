@@ -1,6 +1,5 @@
 (** Parsing GRIB idx files *)
 
-open Batteries
 open Printf
 
 (** Inventory message types *)
@@ -16,11 +15,45 @@ type entry_t = {
   date : string;
   field : string;
   level : string;
+  time : string;
   kind : string;
 }
 
 (** A list of inventory entries *)
 type t = entry_t array
+
+(* Potential simplified version using the Csv library
+let of_string s =
+  let a =
+    Csv.of_string ~separator:':' s
+    |> Csv.input_all
+    |> Csv.to_array
+  in
+  Array.mapi (
+    fun i line ->
+      let message_kind =
+        let index = line.(0) in
+        if String.contains line.(0) '.' then Multi index
+        else Single index
+      in
+      let last_byte =
+        if i < Array.length a - 1 then
+          Some (int_of_string a.(i + 1).(1) - 1)
+        else
+          None
+      in
+      {
+        message_kind;
+        first_byte = int_of_string line.(1);
+        last_byte;
+        date = line.(2);
+        field = line.(3);
+        level = line.(4);
+        time = line.(5);
+        kind = line.(6);
+      }
+  ) a
+*)
 
 (** Inventory entry getter functions *)
 let field e = e.field
@@ -152,15 +185,6 @@ let to_hashtbl key_f index =
     fun field -> Hashtbl.add hash (key_f field) field
   ) index;
   hash
-
-(** [to_map key_f inventory] converts the array of entries in [inventory]
-    to a map for simpler field access.  [key_f] is used to generate
-    the key which matches a given inventory entry. *)
-let to_map key_f inventory =
-  Array.fold_left (
-    fun inv_map entry ->
-      Map.add (key_f entry) entry inv_map
-  ) Map.empty inventory
 
 (** [to_range_hashtbl inventory] is like [to_hashtbl] but instead of a
     [(field_name, field_height_level)] key matching a {!t} it instead

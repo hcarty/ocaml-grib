@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 210b3dcd895c6c66d0b52353064f6bae) *)
+(* DO NOT EDIT (digest: fb88a6658979a0e21a5f9486e95ba0e1) *)
 
 This is the INSTALL file for the ocaml-grib distribution.
 
@@ -11,11 +11,9 @@ Dependencies
 
 In order to compile this package, you will need:
 
-* ocaml
+* ocaml (>= 4.02)
 * findlib
-* batteries for library grib
-* pcre for library grib
-* bytes for library grib
+* bear for library grib
 * oUnit for library test_components, executable main
 
 Installing

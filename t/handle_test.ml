@@ -5,7 +5,7 @@ let handle _ctx =
   let h = Handle.of_sample "GRIB2" in
   assert_bool "get_size" (Handle.get_size h "name" = 1);
   assert_bool "get_native_type"
-    (Handle.get_native_type h "name" = Handle.TYPE_STRING);
+    (Handle.get_native_type h "name" = Handle.String_type);
 
   ignore (Handle.Keys.map (fun x -> x) h);
   Handle.Keys.iter ignore h;

@@ -1,19 +1,19 @@
 module Message :
   sig
-    (** The type of a GRIB message *)
     type t
+    (** The type of a GRIB message *)
 
+    val of_bytes : bytes -> t
     (** [of_bytes b] returns a message made up of the bytes in [b]. *)
-    val of_bytes : Bytes.t -> t
 
-    (** [to_bytes t] returns a {Bytes.t} containing the bytes from [t]. *)
-    val to_bytes : t -> Bytes.t
+    val to_bytes : t -> bytes
+    (** [to_bytes t] returns the {bytes} which make up [t]. *)
 
-    (** [of_string s] returns a message made up of the bytes in [s]. *)
     val of_string : string -> t
+    (** [of_string s] returns a message made up of the bytes in [s]. *)
 
-    (** [to_string t] returns a string containing the bytes from [t]. *)
     val to_string : t -> string
+    (** [to_string t] returns a string containing the bytes from [t]. *)
 
     val of_bigarray :
       (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t ->
@@ -25,72 +25,29 @@ module Message :
       (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
     (** [to_bigarray ba] returns a bigarray containing the bytes from [t]. *)
 
-    (** [save ~mode m filename] saves the message [m] to [filename].
+    val save : open_flag list -> int -> string -> t -> unit
+    (** [save mode perm filename m] saves the message [m] to [filename].
         [mode] specifies if [filename] should be created/overwritten or
         appended to. *)
-    val save :
-      ?perm:Batteries.File.permission ->
-      mode:Batteries.File.open_out_flag list ->
-      t -> string -> unit
 
-    (** [save_list ~mode m filename] saves the messages [m] to [filename].
+    val save_list : open_flag list -> int -> string -> t list -> unit
+    (** [save_list mode perm filename m] saves the messages [m] to [filename].
         [mode] specifies if [filename] should be created/overwritten or
         appended to. *)
-    val save_list :
-      ?perm:Batteries.File.permission ->
-      mode:Batteries.File.open_out_flag list ->
-      t list -> string -> unit
-  end
-module Inventory :
-  sig
-    type entry_t
-
-    (** The type of a GRIB inventory entry from the [.idx] or [.inv] file as
-        provided with GFS data and possibly others. *)
-    type t = entry_t array
-
-    (** Inventory entry getter functions *)
-    val field : entry_t -> string
-    val level : entry_t -> string
-    val range : entry_t -> int * int option
-    val date : entry_t -> string
-    val kind : entry_t -> string
-    val is_multi : entry_t -> bool
-
-    (** [parse_blob lines] is like {!parse_lines} but it works on the entire
-        inventory file at once. *)
-    val parse_blob : string -> t
-
-    (** [get_ranges ?entries inventory] will return a list of
-        [(first_byte, last_byte)] values which cover the data requested by the
-        [(field, level)] pairs in [entries].  If [entries] is not provided
-        then ranges for all entries in [inventory] are returned.
-
-        Multi-field GRIB message entries will be filtered appropriately so that
-        each message is only downloaded once.
-
-        N.B. This will not work as expected if multiple messages with the same
-        [(field, level)] names exist in [inventory].
-
-        Raises [Not_found] if any values in [entries] are
-        not found in [inventory]. *)
-    val get_ranges :
-      ?entries:(string * string) list ->
-      t -> (int * int option) list
   end
 module Handle :
   sig
-    (** The type of a GRIB handle *)
     type t
+    (** The type of a GRIB handle *)
 
     exception Invalid_handle
     (** Raised if a handle is used after being closed *)
 
-    (** Potential value types for generic getters/setters *)
     type value_type_t =
-      | TYPE_STRING
-      | TYPE_LONG
-      | TYPE_DOUBLE
+      | String_type
+      | Int_type
+      | Float_type
+    (** Potential value types for generic getters/setters *)
 
     (** Container type for generic getters/setters *)
     type value_t =
@@ -98,143 +55,102 @@ module Handle :
       | Int of int
       | Float of float
 
-    (** {3 Getting Data} *)
+    (** {3 Getting Data}
 
-    (** All of the [get_*] functions raise [Invalid_argument] if the value(s)
+        All of the [get_*] functions raise [Invalid_argument] if the value(s)
         associated with the given key do not match the data requested. *)
 
+    val get_size : t -> string -> int
     (** [get_size handle key] returns the number of elements associated with
         [key] in the GRIB [handle]. *)
-    val get_size : t -> string -> int
 
+    val get_native_type : t -> string -> value_type_t
     (** [get_native_type handle key] returns the native type of the value
         associated with [key]._*)
-    val get_native_type : t -> string -> value_type_t
 
-    (** [get_double_array handle key] returns the elements from [handle]
+    val get_float_array : t -> string -> float array
+    (** [get_float_array handle key] returns the elements from [handle]
         associated with [key] as floating point values. *)
-    val get_double_array : t -> string -> float array
 
-    (** [get_double_array_ba handle key] returns the elements from [handle]
+    val get_float_array_ba :
+      t -> string -> 'a Bigarray.layout ->
+      (float, Bigarray.float64_elt, 'a) Bigarray.Array1.t
+    (** [get_float_array_ba handle key] returns the elements from [handle]
         associated with [key] as floating point values. *)
-    val get_double_array_ba :
-      t -> string -> 'a Batteries.Bigarray.layout ->
-      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t
 
-    (** [get_double_array_into_ba handle key data] inserts the elements from
+    val get_float_array_into_ba :
+      t -> string ->
+      (float, Bigarray.float64_elt, 'a) Bigarray.Array1.t ->
+      unit
+    (** [get_float_array_into_ba handle key data] inserts the elements from
         [handle] associated with [key] as floating point values into [data].
 
         @raise Invalid_argument if [data] has a different number of elements
         than [key]. *)
-    val get_double_array_into_ba :
-      t -> string ->
-      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
-      unit
 
+    val get_string_any : t -> string -> string
     (** [get_string_any handle key] returns the elements from [handle]
         associated with [key] as a string, regardless of the native type
         of [key].*)
-    val get_string_any : t -> string -> string
 
+    val get_string : t -> string -> string
     (** [get_string handle key] returns the elements from [handle] associated
         with [key] as a string. *)
-    val get_string : t -> string -> string
 
-    (** [get_long handle key] returns the element from [handle] associated
-        with [key] as an integer. *)
-    val get_long : t -> string -> int
-
-    (** [get_double handle key] returns the element from [handle] associated
-        with [key] as a float. *)
-    val get_double : t -> string -> float
-
-    (** Alias for {!get_double_array}. *)
-    val get_float_array : t -> string -> float array
-
-    (** Alias for {!get_double_array_ba}. *)
-    val get_float_array_ba :
-      t -> string -> 'a Batteries.Bigarray.layout ->
-      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t
-
-    (** Alias for {!get_double_array_into_ba}. *)
-    val get_float_array_into_ba :
-      t -> string ->
-      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
-      unit
-
-    (** Alias for {!get_string_any}. *)
-    val get_as_string : t -> string -> string
-
-    (** Alias for {!get_long}. *)
     val get_int : t -> string -> int
+    (** [get_int handle key] returns the element from [handle] associated
+        with [key] as an integer. *)
 
-    (** Alias for {!get_double}. *)
     val get_float : t -> string -> float
+    (** [get_float handle key] returns the element from [handle] associated
+        with [key] as a float. *)
 
-    (** [get_*_opt handle key] will return [Some v] if [key] has a value
-        associated with it, or [None] otherwise. *)
+    val get_as_string : t -> string -> string
+    (** Alias for {!get_string_any}. *)
+
     val get_float_array_opt : t -> string -> float array option
     val get_string_opt : t -> string -> string option
     val get_int_opt : t -> string -> int option
     val get_float_opt : t -> string -> float option
     val get_as_string_opt : t -> string -> string option
+    (** [get_*_opt handle key] will return [Some v] if [key] has a value
+        associated with it, or [None] otherwise. *)
 
-    (** Generic value getters which act like the getter functions above, but
-        return {!value_t} rather than a native type.  *)
     val get : t -> string -> value_t
     val get_opt : t -> string -> value_t option
+    (** Generic value getters which act like the getter functions above, but
+        return {!value_t} rather than a native type.  *)
 
+    val get_message_copy : t -> Message.t
     (** [get_message_copy handle] returns the message associated with [handle]
         as a string of bytes. *)
-    val get_message_copy : t -> Message.t
 
     (** {3 Setting Data} *)
 
-    (** [set_long handle key x] sets [key] to [x] in [handle]. *)
-    val set_long : t -> string -> int -> unit
-
-    (** [set_double handle key x] sets [key] to [x] in [handle]. *)
-    val set_double : t -> string -> float -> unit
-
-    (** [set_string handle key x] sets [key] to [x] in [handle]. *)
-    val set_string : t -> string -> string -> unit
-
-    (** [set_double_array handle key x] sets [key] to [x] in [handle]. *)
-    val set_double_array : t -> string -> float array -> unit
-
-    (** [set_double_array_ba handle key x] sets [key] to [x] in [handle]. *)
-    val set_double_array_ba :
-      t -> string ->
-      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
-      unit
-
-    (** [set_long_array handle key x] sets [key] to [x] in [handle]. *)
-    val set_long_array : t -> string -> int array -> unit
-
-    (** Alias for {!set_long} *)
     val set_int : t -> string -> int -> unit
+    (** [set_int handle key x] sets [key] to [x] in [handle]. *)
 
-    (** Alias for {!set_double} *)
     val set_float : t -> string -> float -> unit
+    (** [set_float handle key x] sets [key] to [x] in [handle]. *)
 
-    (** Alias for {!set_string} *)
     val set_string : t -> string -> string -> unit
+    (** [set_string handle key x] sets [key] to [x] in [handle]. *)
 
-    (** Alias for {!set_double_array} *)
     val set_float_array : t -> string -> float array -> unit
+    (** [set_float_array handle key x] sets [key] to [x] in [handle]. *)
 
-    (** Alias for {!set_double_array_ba} *)
     val set_float_array_ba :
       t -> string ->
-      (float, Batteries.Bigarray.float64_elt, 'a) Batteries.Bigarray.Array1.t ->
+      (float, Bigarray.float64_elt, 'a) Bigarray.Array1.t ->
       unit
+    (** [set_float_array_ba handle key x] sets [key] to [x] in [handle]. *)
 
-    (** Alias for {!set_long_array} *)
     val set_int_array : t -> string -> int array -> unit
+    (** [set_int_array handle key x] sets [key] to [x] in [handle]. *)
 
+    val set : t -> string -> value_t -> unit
     (** Generic value setters which act like the setter fucntions above, but
         take a {!value_t} rather than a native type. *)
-    val set : t -> string -> value_t -> unit
 
     val of_message : Message.t -> t
     (** [of_message m] returns a handle using the data in [m]. *)
@@ -247,214 +163,197 @@ module Handle :
 
     (** {3 Iterators} *)
 
+    val map_message : (t -> 'a) -> Message.t -> 'a
     (** [map_message f m] applies [f] to the {!Handle.t} associated with the
         message [m]. *)
-    val map_message : (t -> 'a) -> Message.t -> 'a
 
-    (** [apply_message f m] applies [f] to the {!Handle.t} associated with the
-        message [m]. *)
-    val apply_message : (t -> unit) -> Message.t -> unit
-
+    val map_sample : (t -> 'a) -> string -> 'a
     (** [map_sample f sample] applies [f] to the handle based on [sample].
         [sample] refers to one of the samples which come with the GRIB API. *)
-    val map_sample : (t -> 'a) -> string -> 'a
 
-    (** [fold_file f filename init] folds over the messages in [filename]. *)
     val fold_file : (t -> 'a -> 'a) -> string -> 'a -> 'a
+    (** [fold_file f filename init] folds over the messages in [filename]. *)
 
+    val map_file : (t -> 'a) -> string -> 'a list
     (** [map_file f filename] applies [f] to each handle in [filename] and
         returns the results as a list. *)
-    val map_file : (t -> 'a) -> string -> 'a list
 
-    (** [iter_file f filename] applies [f] to each handle in [filename]. *)
     val iter_file : (t -> unit) -> string -> unit
+    (** [iter_file f filename] applies [f] to each handle in [filename]. *)
 
+    val filter_map_file : (t -> 'a option) -> string -> 'a list
     (** [filter_map_file f filename] applies [f] to each handle included in
         [filename], filtering the results as each handle is processed. *)
-    val filter_map_file : (t -> 'a option) -> string -> 'a list
 
     (** {2 Module for iterating over GRIB message keys} *)
     module Keys : sig
-      (** Flags to limit which keys we iterate over *)
       type iterator_flag_t =
-        | ALL_KEYS
-        | SKIP_READ_ONLY
-        | SKIP_OPTIONAL
-        | SKIP_EDITION_SPECIFIC
-        | SKIP_CODED
-        | SKIP_COMPUTED
-        | SKIP_DUPLICATES
-        | SKIP_FUNCTION
+        | All_keys
+        | Skip_read_only
+        | Skip_optional
+        | Skip_edition_specific
+        | Skip_coded
+        | Skip_computed
+        | Skip_duplicates
+        | Skip_function
+      (** Flags to limit which keys we iterate over *)
 
-      (** [map f handle] returns a list of [f] applied to all keys in
-          [handle]. *)
       val map :
         ?flags:iterator_flag_t list ->
         ?namespace:string ->
         (string -> 'a) -> t -> 'a list
+      (** [map f handle] returns a list of [f] applied to all keys in
+          [handle]. *)
 
-      (** [iter f handle] applies [f] to each key in [handle]. *)
       val iter :
         ?flags:iterator_flag_t list ->
         ?namespace:string ->
         (string -> unit) -> t -> unit
+      (** [iter f handle] applies [f] to each key in [handle]. *)
 
-      (** [filter_map f handle] returns a list of [f] applied to all keys
-          in [handle].  If [f] returns [None] then that element will dropped
-          from the final list. *)
       val filter_map :
         ?flags:iterator_flag_t list ->
         ?namespace:string ->
         (string -> 'a option) -> t -> 'a list
+      (** [filter_map f handle] returns a list of [f] applied to all keys
+          in [handle].  If [f] returns [None] then that element will dropped
+          from the final list. *)
     end
   end
 module Index :
   sig
-    (** The type of a GRIB index *)
     type t
+    (** The type of a GRIB index *)
 
     exception Invalid_index
     (** Raised if an index is used after being passed to {!delete}. *)
 
-    (** An indexing key-value type *)
     type kv
+    (** An indexing key-value type *)
 
-    (** [*_key k v] build key-value pairs for defining an index. *)
-    val double_key : string -> float -> kv
     val float_key : string -> float -> kv
-    val long_key : string -> int -> kv
     val int_key : string -> int -> kv
     val string_key : string -> string -> kv
+    (** [*_key k v] build key-value pairs for defining an index. *)
 
-    (** [select index kv] selects the subset of values in [index] which
+    val select_one : t -> kv -> unit
+    (** [select_one index kv] selects the subset of values in [index] which
         match [kv]. *)
-    val select : t -> kv -> unit
+
+    val select : t -> kv list -> unit
+    (** [select index kvs] selects the subset of values in [index] which
+        match [kvs]. *)
 
     val select_float : t -> string -> float -> unit
     val select_int : t -> string -> int -> unit
     val select_string : t -> string -> string -> unit
     (** [select_* t k v] selects [k]ey and [v]alue on [t]. *)
 
+    val keys_of_kvs : kv list -> string list
     (** [keys_of_kvs kvs] extracts the keys from the list of [kvs] to ease, for
         example, passing the [keys] argument to {!with_file_in}. *)
-    val keys_of_kvs : kv list -> string list
 
-    (** [create keys] creates an empty index over [keys]. *)
     val create : string list -> t
+    (** [create keys] creates an empty index over [keys]. *)
 
+    val add_file : t -> string -> unit
     (** [add_file index filename] will add the messages from [filename] to
         [index]. *)
-    val add_file : t -> string -> unit
 
-    (** [of_file filename keys] returns an index on [filename] over [keys]. *)
     val of_file : string -> string list -> t
+    (** [of_file filename keys] returns an index on [filename] over [keys]. *)
 
-    (** [of_files ~files ~keys] returns an index on [files] over [keys]. *)
     val of_files : files:string list -> keys:string list -> t
+    (** [of_files ~files ~keys] returns an index on [files] over [keys]. *)
 
+    val delete : t -> unit
     (** [delete index] deletes [index] and frees the underlying resources.
         This will be called automatically if the index is garbage collected and
         the index is not already closed. *)
-    val delete : t -> unit
 
-    (** [get index kvs f] will apply [f] to the handle in [index] which
-        matches [kvs].  If no messages match, [None] is returned.
+    val fold : (Handle.t -> 'a -> 'a) -> t -> 'a -> 'a
+    (** [fold ?kvs f index init] folds [f] over each handle selected from [t],
+        optionally initializing with [kvs]. *)
 
-        @raise Invalid_argument if multiple messages match *)
-    val get : t -> kv list -> (Handle.t -> 'a) -> 'a option
+    val map : (Handle.t -> 'a) -> t -> 'a list
+    (** [map f index] applies [f] to each handle in [index], optionally
+        initializing with [kvs], and returns the results as a list. *)
 
-    (** [get_exn index kvs f] is like {!get} except that it raises an exception
-        if no messages match [kvs].
+    val iter : (Handle.t -> unit) -> t -> unit
+    (** [iter f index] applies [f] to each handle in [index], optionally
+        initializing with [kvs]. *)
 
-        @raise Not_found if no messages match [kvs]
-        @raise Invalid_argument if multiple messages match *)
-    val get_exn : t -> kv list -> (Handle.t -> 'a) -> 'a
-
+    val with_file_in : ?init:kv list -> string -> string list -> (t -> 'a) -> 'a
     (** [with_file_in ?init filename keys f] will call [f] with the index from
         [filename], keyed on [keys]. [init] can be used to initialize the index
         to a specific set of [key, value] pairs. *)
-    val with_file_in : ?init:kv list -> string -> string list -> (t -> 'a) -> 'a
 
+    val with_files_in :
+      ?init:kv list -> files:string list -> keys:string list -> (t -> 'a) -> 'a
     (** [with_files_in ?init ~files ~keys f] will call [f] with the index from
         [files], keyed on [keys]. [init] can be used to initialize the index
         to a specific set of [key, value] pairs. *)
-    val with_files_in :
-      ?init:kv list -> files:string list -> keys:string list -> (t -> 'a) -> 'a
 
-    (** [fold ?kvs f index init] folds [f] over each handle selected from [t],
-        optionally initializing with [kvs]. *)
-    val fold : ?kvs:kv list -> (Handle.t -> 'a -> 'a) -> t -> 'a -> 'a
-
-    (** [map f index] applies [f] to each handle in [index], optionally
-        initializing with [kvs], and returns the results as a list. *)
-    val map : ?kvs:kv list -> (Handle.t -> 'a) -> t -> 'a list
-
-    (** [iter f index] applies [f] to each handle in [index], optionally
-        initializing with [kvs]. *)
-    val iter : ?kvs:kv list -> (Handle.t -> unit) -> t -> unit
-
-    (** [map_file f filename keys] is equivalent to calling
-        [with_file_in filename keys (map f)] *)
-    val map_file : (Handle.t -> 'a) -> string -> kv list -> 'a list
-
-    (** [iter_file f filename keys] is equivalent to calling
-        [with_file_in filename keys (iter f)] *)
-    val iter_file : (Handle.t -> unit) -> string -> kv list -> unit
-
-    (** [write index filename] writes [index] out to [filename]. *)
     val write : t -> string -> unit
+    (** [write index filename] writes [index] out to [filename]. *)
 
-    (** [read filename] reads [index] from [filename]. *)
     val read : string -> t
+    (** [read filename] reads [index] from [filename]. *)
   end
 module Iterator :
   sig
     (** The type of a GRIB iterator *)
     type t
 
-    (** [next i] returns the next [(lat, lon, value)] from the iterator [i]. *)
-    val next : t -> (float * float * float) option
+    val of_handle : Handle.t -> t
+    (** [of_handle h] returns an iterator which will walk the data values in
+        [h]. *)
 
+    val delete : t -> unit
+    (** [delete i] will free the resources associated with [i]. *)
+
+    val next : t -> (float * float * float) option
+    (** [next i] returns the next [(lat, lon, value)] from the iterator [i]. *)
+
+    val previous : t -> (float * float * float) option
     (** [previous i] returns the previous [(lat, lon, value)] from the
         iterator [i]. *)
-    val previous : t -> (float * float * float) option
 
+    val reset : t -> unit
     (** [reset i] is undocumented in the GRIB API as of version 1.9.0.
         It hopefully resets the iterator to the first data point. *)
-    val reset : t -> unit
 
+    val iterator_in : (t -> 'a) -> Handle.t -> 'a
     (** [iterator_in f h] applies [f] to an iterator associated with the
         {!Handle.t} [h]. *)
-    val iterator_in : (t -> 'a) -> Handle.t -> 'a
 
+    val iter : (float * float * float -> unit) -> Handle.t -> unit
     (** [iter f h] applies the function [f] to each value returned by an
         iterator on [h]. *)
-    val iter : (float * float * float -> unit) -> Handle.t -> unit
 
+    val map : (float * float * float -> 'a) -> Handle.t -> 'a list
     (** [map f h] applies the function [f] to each value returned by an
         iterator on [h] and returns the results as a list. *)
-    val map : (float * float * float -> 'a) -> Handle.t -> 'a list
 
+    val to_lat_lon_value : Handle.t -> float list * float list * float list
     (** [to_lat_lon_value h] returns a [(lats, lons, values)] tuple containing
         the values from the iterator associated with [h]. *)
-    val to_lat_lon_value : Handle.t -> float list * float list * float list
   end
 module Multi :
   sig
-    (** Turn support on and off for multiple fields in a single message *)
     val support_on : unit -> unit
     val support_off : unit -> unit
+    (** Turn support on and off for multiple fields in a single message *)
 
+    val messages_of_multi_message : Message.t -> Message.t list
     (** [messages_of_multi_message m] copies a messages for each field from the
         multi-field message [m] if multiple field support is on. *)
-    val messages_of_multi_message : Message.t -> Message.t list
 end
 module Nearest :
   sig
-    (** The type of a GRIB API nearest *)
     type t
+    (** The type of a GRIB API nearest *)
 
-    (** Data on a nearby point *)
     type near_t = {
       target : (float * float); (** The targeted point *)
       loc : (float * float); (** The location of a nearby point *)
@@ -462,65 +361,85 @@ module Nearest :
       distance : float; (** Distance to the nearby point *)
       index : int; (** Index of the nearby point in the values array *)
     }
+    (** Data on a nearby point *)
 
-    (** Flags for {!find} *)
     type flag_t =
-      | SAME_POINT (** Same point (location) from one check to the next *)
-      | SAME_GRID (** Same grid from one check to the next *)
-      | SAME_DATA (** Same data from one check to the next *)
+      | Same_point (** Same point (location) from one check to the next *)
+      | Same_grid (** Same grid from one check to the next *)
+      | Same_data (** Same data from one check to the next *)
+    (** Flags for {!find} *)
 
-    (** [of_handle h] creates a {!t} value from then handle [h]. *)
     val of_handle : Handle.t -> t
+    (** [of_handle h] creates a {!t} value from then handle [h]. *)
 
-    (** [find ?flags t h p] finds the four nearest points to a given [p]
-        ([lon, lat]) from the data in the handle [h] using the nearest [n]. *)
     val find :
       ?flags:flag_t list ->
       t -> Handle.t -> float * float -> near_t array
+    (** [find ?flags t h p] finds the four nearest points to a given [p]
+        ([lon, lat]) from the data in the handle [h] using the nearest [n]. *)
 
-    (** [find_multiple ?mask h ps] finds the nearest point to each of a series
-        of data points [ps].  If [mask] is [true] then [h] is considered to be
-        a land-sea mask and the closest on-land point is used. *)
     val find_multiple :
       ?mask:bool ->
       Handle.t -> (float * float) array -> near_t array
+    (** [find_multiple ?mask h ps] finds the nearest point to each of a series
+        of data points [ps].  If [mask] is [true] then [h] is considered to be
+        a land-sea mask and the closest on-land point is used. *)
 end
 module G2clib :
   sig
-    (** NCEP g2clib bindings *)
+    (** {2 NCEP g2clib bindings} *)
 
+    type 'a field
     (** The type of a GRIB field *)
-    type 'a field_t
 
-    (** [of_message ?field message] returns a {!field_t} from [message] with
+    val of_message : ?field:int -> Message.t -> [ `unpacked ] field
+    (** [of_message ?field message] returns a {!field} from [message] with
         unpacked field values and bitmap.
 
         @param field indicates which field in the message you want to extract.
         Defaults to [1] (the first field in the message).
     *)
-    val of_message : ?field:int -> Message.t -> [ `unpacked ] field_t
 
-    (** [of_handle ?field handle] returns a {!field_t} from [handle] with
+    val of_handle : ?field:int -> Handle.t -> [ `unpacked ] field
+    (** [of_handle ?field handle] returns a {!field} from [handle] with
         unpacked field values and bitmap.
 
         @param field indicates which field in the handle you want to extract.
         Defaults to [1] (the first field in the message).
     *)
-    val of_handle : ?field:int -> Handle.t -> [ `unpacked ] field_t
 
-    (** [get_values ?missing1 ?missing2 field] returns the unpacked data from
-        [field], replacing missing values in complex packed grids if
+    val get_float_array :
+      ?missing1:float ->
+      ?missing2:float ->
+      [ `unpacked ] field -> float array
+    (** [get_float_array ?missing1 ?missing2 field] returns the unpacked data
+        from [field], replacing missing values in complex packed grids if
         replacements are provided.
 
         @param missing1 will be substituted for any primary missing values if
         it is provided
         @param missing2 will be substituted for any seconary missing values if
         it is provided *)
-    val get_values :
+
+    val get_float_array_ba :
       ?missing1:float ->
       ?missing2:float ->
-      [ `unpacked ] field_t -> float array
+      [ `unpacked ] field -> 'a Bigarray.layout ->
+      (float, Bigarray.float64_elt, 'a) Bigarray.Array1.t
+    (** Like {!get_float_array} except that the result is a bigarray. *)
 
+    val get_float_array_into_ba :
+      ?missing1:float ->
+      ?missing2:float ->
+      [ `unpacked ] field ->
+      (float, Bigarray.float64_elt, 'a) Bigarray.Array1.t -> unit
+    (** Like {!get_float_array_ba} except that the data are written into the
+        given bigarray.
+
+        @raise Invalid_argument if the given bigarray has a different number of
+        elemetns than the given {!field}. *)
+
+    val get_missing : 'a field -> float option * float option
     (** [get_missing field] returns the value(s) associated with missing data
         in [field] if there are any.  If both values in the tuple are [None]
         then there is no special value for marking missing data.  If only
@@ -528,6 +447,5 @@ module G2clib :
         missing data.  If the returned tuple is [Some a, Some b] then [a] is
         the primary missing value and [b] is the secondary missing value
         according to code table 5.5. *)
-    val get_missing : 'a field_t -> float option * float option
   end
 

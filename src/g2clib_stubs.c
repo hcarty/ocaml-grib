@@ -108,6 +108,13 @@ value ml_g2_getfld_handle( value handle, value field_num, value unpack, value ex
     CAMLreturn( Val_gribfield( field ) );
 }
 
+value ml_get_ngrdpts( value ml_field ) {
+    CAMLparam1( ml_field );
+    gribfield *field;
+    field = Gribfield_val( ml_field );
+    CAMLreturn( Val_int( field->ngrdpts ) );
+}
+
 #define ML_G2_UNDEF 1.111e20
 
 // Get grid values from a GRIB field
@@ -153,6 +160,56 @@ value ml_get_data( value ml_substitute1, value ml_substitute2, value ml_field ) 
 
     // Return the OCaml-formatted data copy
     CAMLreturn( ml_data );
+}
+
+// Get grid values from a GRIB field
+value ml_get_data_ba( value ml_substitute1, value ml_substitute2, value ml_field, value ba ) {
+    CAMLparam4( ml_substitute1, ml_substitute2, ml_field, ba );
+
+    int i;
+    double v;
+    float missing[2];
+    int num_missing;
+
+    double substitute1 = ML_G2_UNDEF;
+    double substitute2 = ML_G2_UNDEF;
+
+    gribfield *field;
+
+    double *data;
+
+    data = (double *)Caml_ba_data_val( ba );
+
+    field = Gribfield_val( ml_field );
+    g2_miss( field, missing, &num_missing );
+
+    if ( Caml_ba_array_val(ba)->dim[0] != field->ngrdpts ) {
+        caml_invalid_argument( "Wrong number of elements in bigarray" );
+    }
+
+    // Check to see if we are going to fill in any missing values
+    if ( num_missing >= 1 && ml_substitute1 != Val_none ) {
+        substitute1 = Double_val( Some_val( ml_substitute1 ) );
+    }
+
+    // Check to see if there are two possible missing values
+    if ( num_missing >= 2 && ml_substitute2 != Val_none ) {
+        substitute2 = Double_val( Some_val( ml_substitute2 ) );
+    }
+
+    // Allocate an OCaml array and copy the data over
+    for ( i = 0; i < field->ngrdpts; i++ ) {
+        v = field->fld[i];
+        if ( num_missing >= 1 && substitute1 != ML_G2_UNDEF && v == missing[0] ) {
+            v = substitute1;
+        }
+        else if ( num_missing >= 2 && substitute2 != ML_G2_UNDEF && v == missing[1] ) {
+            v = substitute2;
+        }
+        data[i] = v;
+    }
+
+    CAMLreturn( Val_unit );
 }
 
 // Get missing values, if there are any

@@ -1,10 +1,13 @@
-open Batteries
+open Bear
 
 type t
 
 external _new : Handle.handle -> int -> t = "ml_grib_iterator_new"
 
-let of_handle ?(flags = 1) handle =
+let of_handle handle =
+  (* flags is unused by the GRIB API as of version 1.13.1, so this is a
+     placeholder for now. *)
+  let flags = 1 in
   Handle.use_1 _new handle flags
 
 external next : t -> (float * float * float) option = "ml_grib_iterator_next"

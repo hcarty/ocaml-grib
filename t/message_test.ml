@@ -15,11 +15,12 @@ let message _ctx =
   end;
   (* Save one message *)
   let outfile = Filename.temp_file "message" "test" in
-  Message.save ~mode:[`create] message outfile;
+  Message.save [Open_creat; Open_trunc; Open_wronly] 0o644 outfile message;
   Sys.remove outfile;
   (* Save multiple messages at once *)
   let outfile = Filename.temp_file "message" "test" in
-  Message.save_list ~mode:[`create] [message; message] outfile;
+  Message.save_list
+    [Open_creat; Open_trunc; Open_wronly] 0o644 outfile [message; message];
   Sys.remove outfile
 
 let t =
