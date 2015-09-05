@@ -1,6 +1,6 @@
 OASISFormat: 0.4
 Name:        ocaml-grib
-Version:     0.10.0
+Version:     0.11.0
 Synopsis:    Bindings for the ECMWF GRIB API and NCEP's g2clib
 Description: Access GRIB1 and GRIB2 data, a format commonly used in
              meteorology.

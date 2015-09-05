@@ -1,3 +1,21 @@
+0.11.0
+* Remove Batteries, PCRE dependencies
+* Add Bear depedency
+* Officially require OCaml >= 4.02.0
+* Rename G2clib.field_t -> G2clib.field
+* Rename G2clib.get_values -> G2clib.get_float_array
+* Add G2clib.(get_float_array_ba, get_float_array_into_ba)
+* Message.(save, save_list) use stdlib open_flags to specify how files are
+  opened and require an integer permissions argument now.  Their argument order
+  have also been changed to more closely match stdlib's open_* functions.
+* Handle.value_type_t constructors renamed
+* Remove Handle.* with "double" or "long" in the name
+* Remove Handle.apply_message - it was an extraneous wrapper around map
+* Handle.Keys.iterator_flag_t contstructors renamed
+* Remove Handle.Index.* with "double" or "long" in the name
+* Remove Handle.Index.(get, get_exn, map_file, iter_file) functions
+* Expose Iterator.(of_handle, delete)
+* Nearest.flag_t constructors renamed
 0.10.0
 * Add Handle.get_(float|double)_array_into_ba
 * Add Index.(of_files, with_files_in)
